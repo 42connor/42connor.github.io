@@ -9,10 +9,12 @@
  * The painting is drawn ONCE, spread over several animation frames so it never
  * blocks input, then the canvas sits there costing nothing. No render loop.
  *
- * Marks come from four passes: flat wash() corner tints, two watercolor
+ * Marks come from several passes: flat wash() corner tints, two watercolor
  * fill() blooms, field-driven flowLine() drift, deliberate beginStroke() /
  * move() / endStroke() spines, one mass() hand-filled tint, a hatch() panel,
- * and charcoal spline() accents.
+ * charcoal spline() accents, and generative marginalia — little painted
+ * sprigs and sparkles out in the gutters, in the spirit of an illuminated
+ * manuscript. No two page loads draw the same ones.
  *
  * p5.brush by Alejandro Campos Uribe (MIT) — see vendor/p5.brush-LICENSE.md
  */
@@ -191,7 +193,7 @@
        gives long organic drifts. These run down the gutters, so on a wide
        screen you get painted margins framing the CV. */
     var field = ['seabed', 'waves', 'curved'][Math.floor(rnd() * 3)];
-    var lanes = tight ? 5 : roomy ? 18 : 11;
+    var lanes = tight ? 4 : roomy ? 8 : 6;
     var perStep = 4;
 
     for (var start = 0; start < lanes; start += perStep) {
@@ -366,6 +368,149 @@
             ]);
           }
           brush.spline(pts, 0.55);
+        }
+        brush.noClip();
+      });
+    }
+
+    /* -- marginalia: sprigs and sparkles ---------------------------------
+       Illuminated manuscripts put small painted plants in the margins beside
+       the text. That is exactly what these are, except no two are ever the
+       same: a stem that curves as it grows, leaves alternating up it, and a
+       berry at the tip.
+
+       Geometry note — measured, not guessed: for move(a, len), the step is
+       (cos a * len, -sin a * len). So angle 0 goes right and +90 goes UP,
+       which is what lets a sprig grow off its base instead of hanging from it.
+
+       These are all stroke operations, so clip() genuinely binds them and the
+       marginalia physically cannot land on the reading column. */
+    var DEG = Math.PI / 180;
+
+    // One leaf, as a filled almond pointing along `angle`.
+    //
+    // Chained pen strokes cannot make a leaf — they make grass. A closed
+    // polygon can. Verified against this build: beginShape/vertex/endShape
+    // under wash() fills a custom outline, and push/translate/rotate places it.
+    //
+    // rotate(-angle), not rotate(angle): move(a, len) steps by
+    // (cos a, -sin a), while rotate(t) maps (1,0) to (cos t, sin t). Negating
+    // is what makes a leaf lie along the stem direction instead of mirrored
+    // across it.
+    function leaf(x, y, angle, L, W, alpha) {
+      brush.push();
+      brush.translate(x, y);
+      brush.rotate(-angle);
+      brush.noStroke();
+      brush.wash(GOLD, alpha);
+      // Traced parametrically rather than as a handful of hard vertices —
+      // sin(pi*t) gives an almond that is pointed at both ends, and enough
+      // steps that the edge reads as a curve instead of a facetted hexagon.
+      var STEPS = 9;
+      brush.beginShape();
+      for (var i = 0; i <= STEPS; i++) {
+        var t = i / STEPS;
+        brush.vertex(L * t, -W * Math.pow(Math.sin(Math.PI * t), 0.75));
+      }
+      for (var j = STEPS - 1; j > 0; j--) {
+        var u = j / STEPS;
+        brush.vertex(L * u, W * Math.pow(Math.sin(Math.PI * u), 0.75));
+      }
+      brush.endShape(true);
+      brush.noWash();
+      brush.pop();
+    }
+
+    function sprig(baseX, baseY, height, lean) {
+      var nodes = [];
+      var segs = 5;
+      var segLen = height / segs;
+      var x = baseX;
+      var y = baseY;
+      var ang = 90 + lean * (4 + rnd() * 7);   // +90 = straight up
+
+      // 'pen' rather than '2B': the pencils scatter their grain, which at this
+      // scale turns a stem into a smudge. A crisp line reads as drawn.
+      brush.set('pen', GOLD, 1.2 + rnd() * 0.4);
+      brush.beginStroke('curve', x, y);
+      for (var i = 0; i < segs; i++) {
+        // A steady drift in one direction is what makes a stem look grown
+        // rather than jointed.
+        var a = ang + lean * i * (5 + rnd() * 5) + (rnd() - 0.5) * 6;
+        brush.move(a, segLen, 0.4 + rnd() * 0.25);
+        x += Math.cos(a * DEG) * segLen;
+        y += -Math.sin(a * DEG) * segLen;
+        nodes.push([x, y, a]);
+      }
+      brush.endStroke(ang + lean * 20, 0.14);
+
+      // One leaf per node, alternating sides. Both sides of every node crowds
+      // into a tangle at this size; alternating keeps the silhouette open.
+      for (var n = 0; n < nodes.length - 1; n++) {
+        if (rnd() > 0.9) continue;             // an occasional gap
+        var nx = nodes[n][0], ny = nodes[n][1], na = nodes[n][2];
+        var sgn = (n % 2 === 0) ? 1 : -1;
+        var L = segLen * (0.92 - n * 0.1) * (0.85 + rnd() * 0.3);
+        leaf(
+          nx, ny,
+          na + sgn * (42 + rnd() * 16),
+          L,
+          L * (0.26 + rnd() * 0.1),
+          96 + rnd() * 42
+        );
+      }
+
+      // A small bud closing the tip.
+      var tip = nodes[nodes.length - 1];
+      brush.noStroke();
+      brush.wash(GOLD, 110 + rnd() * 40);
+      brush.circle(tip[0], tip[1], 2.6 + rnd() * 2, 0.9);
+      brush.noWash();
+    }
+
+    // Four-point sparkle: a long arm and a short one, crossed. The asymmetry
+    // is what stops it reading as a plus sign.
+    function sparkle(x, y, r) {
+      brush.set('pen', GOLD, 0.85 + rnd() * 0.4);
+      brush.beginStroke('curve', x, y - r);
+      brush.move(-90, r * 2, 0.5);
+      brush.endStroke(-90, 0.1);
+      var s = r * 0.5;
+      brush.beginStroke('curve', x - s, y);
+      brush.move(0, s * 2, 0.42);
+      brush.endStroke(0, 0.1);
+    }
+
+    if (!tight) {
+      [-1, 1].forEach(function (side) {
+        steps.push(function () {
+          reset();
+          clipTo(side);
+          var count = roomy ? 2 : 1;
+          for (var i = 0; i < count; i++) {
+            var span = Math.max(14, gutter - 96);
+            sprig(
+              side * (colHalf + 44 + rnd() * span),
+              halfH * (0.2 + rnd() * 0.6),            // low in the margin
+              h * (0.14 + rnd() * 0.08),              // grows up from there
+              rnd() > 0.5 ? 1 : -1
+            );
+          }
+          brush.noClip();
+        });
+      });
+
+      steps.push(function () {
+        reset();
+        var marks = roomy ? 9 : 5;
+        for (var i = 0; i < marks; i++) {
+          var side = rnd() > 0.5 ? 1 : -1;
+          clipTo(side);
+          sparkle(
+            side * (colHalf + 26 + rnd() * Math.max(12, gutter - 48)),
+            (rnd() - 0.5) * h * 0.88,
+            5 + rnd() * 7
+          );
         }
         brush.noClip();
       });
