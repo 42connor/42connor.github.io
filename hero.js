@@ -635,9 +635,31 @@
       if (!brush || typeof brush.createCanvas !== 'function') return;
       paint();
       window.addEventListener('resize', onResize, { passive: true });
+      offerRepaint();
     };
     // On failure the CSS .ambient gradient is simply what the visitor sees.
     document.head.appendChild(s);
+  }
+
+  /* ---------------------------------------------------------------- repaint */
+
+  // Every load draws a different painting, so the only thing missing was a way
+  // to ask for another one. Revealed only once a painting is actually on
+  // screen: on a device where the gating declined, the control would be a
+  // button that does nothing.
+  //
+  // paint() bumps `generation`, which makes any in-flight painting abandon
+  // itself, so leaning on the button is safe rather than cumulative.
+  function offerRepaint() {
+    var wrap = document.getElementById('repaint-wrap');
+    var btn = document.getElementById('repaint');
+    if (!wrap || !btn) return;
+
+    wrap.hidden = false;
+    btn.addEventListener('click', function () {
+      mount.classList.remove('is-painted', 'is-instant');
+      paint();
+    });
   }
 
   // Strictly after load, and then only when the main thread has nothing better

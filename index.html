@@ -160,7 +160,11 @@
         <hr>
 
         <footer>
-            <p><a href="#top">cd ..</a> &middot; <button type="button" id="print" class="shell">print cv</button> &middot; &copy; 2026 Connor Hood</p>
+            <!-- The repaint control stays hidden until hero.js has actually got a
+                 painting on screen, so it is never offered where it would do
+                 nothing. The separator lives inside the wrapper to avoid a
+                 dangling middot. -->
+            <p><a href="#top">cd ..</a> &middot; <button type="button" id="print" class="shell">print cv</button><span id="repaint-wrap" hidden> &middot; <button type="button" id="repaint" class="shell">repaint</button></span> &middot; &copy; 2026 Connor Hood</p>
         </footer>
     </main>
     <script type="application/ld+json">
