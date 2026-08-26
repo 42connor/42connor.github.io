@@ -17,6 +17,7 @@ dependencies to install. Open `index.html` and it works.
 | `img/` | Portrait at 1x/2x/3x in webp and jpg. |
 | `vendor/` | Third-party libraries, committed rather than installed. |
 | `tools/og-card.html` | Source for the social share card; see below. |
+| `tools/render-card.mjs` | Renders that card to `og-card.png`. Zero dependencies. |
 
 ## Vendored libraries
 
@@ -38,13 +39,18 @@ lines. Both respect `prefers-reduced-motion`.
 
 ## Regenerating the share card
 
-`og-card.png` is a 1200x630 render of `tools/og-card.html`. To rebuild it after
-changing the card:
+`og-card.png` is a 1200x630 render of `tools/og-card.html`. After changing the
+card, rebuild it with:
 
 ```sh
-python3 -m http.server 8000
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless --screenshot=og-card.png --window-size=1200,630 \
-  --default-background-color=0 \
-  http://127.0.0.1:8000/tools/og-card.html
+node tools/render-card.mjs
 ```
+
+The script is self-contained — it starts its own static server and its own
+isolated headless Chrome, waits for the webfonts to load, shoots the card, and
+cleans up after itself. No dependencies to install, and it never touches your
+real browser profile. Set `CHROME=/path/to/chrome` if it cannot find a browser.
+
+Chrome's old `--screenshot` flag is not an option here: the headless mode it
+belonged to has been removed from current builds, so the script drives DevTools
+directly instead.
