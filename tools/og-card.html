@@ -32,6 +32,9 @@
         --gold: #a87a2b;
         --gold-soft: #c9a55b;
         --rule: #d8cdb4;
+        --rose: #c2707a;
+        --blush: #e2b0b3;
+        --sage: #869176;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -105,23 +108,65 @@
     <!-- Hand-drawn echo of the generative marginalia in hero.js: a curving
          stem with almond leaves alternating up it. -->
     <svg class="sprigs" viewBox="0 0 1200 630" fill="none">
-        <g stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" opacity="0.8">
-            <path d="M1108 596c14-40 2-84 16-126s2-70 14-104"/>
-            <path d="M62 44c-12 34-2 66-14 98"/>
+        <defs>
+          <g id="bloom">
+            <g fill="var(--sage)" opacity="0.55">
+              <path transform="rotate(132)" d="M0 0C7-4.5 7-20 0-25C-7-20-7-4.5 0 0Z"/>
+              <path transform="rotate(-132)" d="M0 0C7-4.5 7-20 0-25C-7-20-7-4.5 0 0Z"/>
+            </g>
+            <g fill="var(--blush)" opacity="0.92">
+            <path transform="rotate(0.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(45.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(90.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(135.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(180.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(225.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(270.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            <path transform="rotate(315.0)" d="M0 0C8.4-4 8.4-19.5 0-24C-8.4-19.5-8.4-4 0 0Z"/>
+            </g>
+            <g fill="var(--rose)" opacity="0.85">
+            <path transform="rotate(25.7)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(77.1)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(128.6)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(180.0)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(231.4)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(282.8)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            <path transform="rotate(334.3)" d="M0 0C5.6-2.6 5.6-12.6 0-15.5C-5.6-12.6-5.6-2.6 0 0Z"/>
+            </g>
+            <circle r="5.6" fill="var(--gold)"/>
+            <circle r="2.4" fill="var(--gold-soft)"/>
+          </g>
+        </defs>
+
+        <!-- Stems, drawn to match the sage sprigs hero.js grows in the margins. -->
+        <g stroke="var(--sage)" stroke-width="2.4" stroke-linecap="round" opacity="0.75">
+            <path d="M1112 604c14-42 0-88 14-132s2-72 14-108"/>
+            <path d="M1058 612c8-30 22-56 26-88"/>
+            <path d="M58 30c-12 36 0 70-14 104"/>
         </g>
-        <g fill="var(--gold)" opacity="0.78">
-            <g transform="translate(1118,540) rotate(-46)"><path d="M0 0Q18-11 44 0Q18 11 0 0Z"/></g>
-            <g transform="translate(1112,478) rotate(44)"><path d="M0 0Q16-10 40 0Q16 10 0 0Z"/></g>
-            <g transform="translate(1126,414) rotate(-42)"><path d="M0 0Q15-9 36 0Q15 9 0 0Z"/></g>
-            <g transform="translate(1122,356) rotate(40)"><path d="M0 0Q13-8 30 0Q13 8 0 0Z"/></g>
-            <circle cx="1136" cy="312" r="5"/>
-            <g transform="translate(56,86) rotate(214)"><path d="M0 0Q15-9 36 0Q15 9 0 0Z"/></g>
-            <g transform="translate(50,132) rotate(128)"><path d="M0 0Q13-8 30 0Q13 8 0 0Z"/></g>
+
+        <!-- Sage leaves up the stems. -->
+        <g fill="var(--sage)" opacity="0.6">
+            <g transform="translate(1120,548) rotate(-46)"><path d="M0 0Q18-11 44 0Q18 11 0 0Z"/></g>
+            <g transform="translate(1114,486) rotate(44)"><path d="M0 0Q16-10 40 0Q16 10 0 0Z"/></g>
+            <g transform="translate(1128,420) rotate(-42)"><path d="M0 0Q15-9 36 0Q15 9 0 0Z"/></g>
+            <g transform="translate(1068,570) rotate(48)"><path d="M0 0Q14-9 34 0Q14 9 0 0Z"/></g>
+            <g transform="translate(50,74) rotate(214)"><path d="M0 0Q15-9 36 0Q15 9 0 0Z"/></g>
+            <g transform="translate(44,124) rotate(128)"><path d="M0 0Q13-8 30 0Q13 8 0 0Z"/></g>
         </g>
-        <g stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" opacity="0.55">
-            <path d="M1040 220v26M1027 233h26"/>
+
+        <!-- Blooms crowning the stems, plus one loose. -->
+        <use href="#bloom" transform="translate(1140,300) rotate(12) scale(1.15)"/>
+        <use href="#bloom" transform="translate(1082,516) rotate(-24) scale(0.72)"/>
+        <use href="#bloom" transform="translate(38,152) rotate(196) scale(0.86)"/>
+        <use href="#bloom" transform="translate(1176,432) rotate(40) scale(0.5)"/>
+
+        <!-- Gold sparkles. -->
+        <g stroke="var(--gold)" stroke-width="1.7" stroke-linecap="round" opacity="0.55">
+            <path d="M1016 200v26M1003 213h26"/>
             <path d="M150 520v20M140 530h20"/>
-            <path d="M1072 92v16M1064 100h16"/>
+            <path d="M1040 90v16M1032 98h16"/>
+            <path d="M112 372v18M103 381h18"/>
         </g>
     </svg>
 
