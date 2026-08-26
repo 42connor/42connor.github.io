@@ -6,11 +6,34 @@
     <title>Connor Hood — CV</title>
     <meta name="description" content="Connor Hood — AI Specialist, ML Datasets &amp; Full Stack Developer.">
     <meta name="theme-color" content="#f5efe1">
+    <link rel="canonical" href="https://42connor.github.io/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+    <!-- Shared on X and LinkedIn, so the card matters as much as the page. -->
+    <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="Connor Hood">
+    <meta property="og:title" content="Connor Hood — AI Specialist, ML Datasets &amp; Robotics">
+    <meta property="og:description" content="ML datasets, vision-language-action models, and full stack web development — with hands-on production and assembly-line experience behind it.">
+    <meta property="og:url" content="https://42connor.github.io/">
+    <meta property="og:image" content="https://42connor.github.io/og-card.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Connor Hood — AI Specialist, ML Datasets and Full Stack Developer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:creator" content="@SocialAcolyte">
+    <meta name="twitter:title" content="Connor Hood — AI Specialist, ML Datasets &amp; Robotics">
+    <meta name="twitter:description" content="ML datasets, vision-language-action models, and full stack web development — with hands-on production and assembly-line experience behind it.">
+    <meta name="twitter:image" content="https://42connor.github.io/og-card.png">
+
+    <!-- The italic face sets .note, which is above the fold; without this it
+         arrives after the roman and the intro line visibly swaps. -->
     <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="top">
     <div class="ambient" aria-hidden="true"></div>
     <div id="paint" aria-hidden="true"></div>
     <div class="veil" aria-hidden="true"></div>
@@ -137,10 +160,33 @@
         <hr>
 
         <footer>
-            <p><a href="#top">cd ..</a> &middot; &copy; 2026 Connor Hood</p>
+            <p><a href="#top">cd ..</a> &middot; <button type="button" id="print" class="shell">print cv</button> &middot; &copy; 2026 Connor Hood</p>
         </footer>
     </main>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Connor Hood",
+        "url": "https://42connor.github.io/",
+        "image": "https://42connor.github.io/img/profile-390.jpg",
+        "email": "mailto:42connor@gmail.com",
+        "jobTitle": "AI Specialist",
+        "sameAs": [
+            "https://github.com/42connor",
+            "https://www.linkedin.com/in/connor-m-hood/",
+            "https://x.com/SocialAcolyte"
+        ]
+    }
+    </script>
     <script src="hero.js" defer></script>
     <script type="module" src="pretext.js"></script>
+    <script>
+        /* The print stylesheet already produces a clean one-page CV, so this is
+           the whole feature. */
+        document.getElementById('print').addEventListener('click', function () {
+            window.print();
+        });
+    </script>
 </body>
 </html>

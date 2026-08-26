@@ -231,6 +231,12 @@ hr::before {
 
 section { margin-bottom: 0.25rem; }
 
+/* Native balancing beats anything hand-rolled here: `balance` keeps headings
+   from dropping a single word onto a second line, `pretty` stops paragraphs
+   ending in an orphan. Both are progressive — older engines just ignore them. */
+h1, h2, h3, .title { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+
 h2 {
     font-family: 'Cormorant Garamond', 'Georgia', serif;
     font-size: 1.55rem;
@@ -351,13 +357,33 @@ footer a {
     font-family: 'JetBrains Mono', monospace;
 }
 
-footer a::before {
+footer a::before,
+footer .shell::before {
     content: "$ ";
     color: var(--ink-soft);
     opacity: 0.55;
 }
 
 footer a:hover { color: var(--ink); }
+
+/* A button, because it performs an action — dressed as a shell command so the
+   footer still reads as one line of terminal. */
+footer .shell {
+    font: inherit;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+footer .shell:hover { color: var(--ink); }
+
+footer .shell:focus-visible {
+    outline: 1px solid var(--gold);
+    outline-offset: 3px;
+}
 
 /* ── Flowed paragraph (see pretext.js) ─────────────────────────────────────
    The source <p> is the real content and stays in the DOM for selection,
@@ -450,7 +476,7 @@ footer a:hover { color: var(--ink); }
     .portrait { box-shadow: none; border: 1px solid #999; }
     hr::before { color: #999; }
     .role, .year, p strong, li strong { color: #000; background: none; border: none; }
-    .ambient, #paint, .veil { display: none; }
+    .ambient, #paint, .veil, footer .shell { display: none; }
 
     /* Hand the real paragraph back to the printer. The footnote goes with the
        canvas — on paper nothing was laid out per frame. */
