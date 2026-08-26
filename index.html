@@ -50,6 +50,27 @@
 
         <hr>
 
+        <section id="flow" class="flow">
+            <h2>In Practice</h2>
+            <p class="flow-source">
+                I build things that sit between the physical and the computational &mdash; ML datasets
+                that teach a machine to read hands moving, vision-language-action models that have to
+                survive contact with the real world, and the unglamorous production-floor work that
+                taught me what tolerance and repeatability actually mean. Robotics is where those two
+                halves meet, and it is the part of the future I most want to help build: machines that
+                have to be right about the physical world, not just fluent about it.
+            </p>
+            <!-- Only shown once pretext has actually taken the layout over, so the
+                 claim stays true in the fallback case. -->
+            <p class="flow-note">
+                Every line above was measured and placed in JavaScript, then re-flowed around the
+                drifting shape once per frame &mdash; your browser never laid this paragraph out.
+                Built with <a href="https://github.com/chenglou/pretext" target="_blank" rel="noopener">pretext</a>.
+            </p>
+        </section>
+
+        <hr>
+
         <section>
             <h2>Software Engineering</h2>
             <ul>
@@ -120,5 +141,6 @@
         </footer>
     </main>
     <script src="hero.js" defer></script>
+    <script type="module" src="pretext.js"></script>
 </body>
 </html>
