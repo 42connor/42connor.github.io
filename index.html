@@ -5,16 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connor Hood — CV</title>
     <meta name="description" content="Connor Hood — AI Specialist, ML Datasets &amp; Full Stack Developer.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#f5efe1">
+    <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="ambient" aria-hidden="true"></div>
+    <div id="paint" aria-hidden="true"></div>
+    <div class="veil" aria-hidden="true"></div>
     <main>
         <header class="masthead">
-            <img src="profile.jpg" alt="Connor Hood" class="portrait" onerror="this.style.display='none'">
+            <picture>
+                <source type="image/webp"
+                        srcset="img/profile-130.webp 1x, img/profile-260.webp 2x, img/profile-390.webp 3x">
+                <img src="img/profile-260.jpg"
+                     srcset="img/profile-130.jpg 1x, img/profile-260.jpg 2x, img/profile-390.jpg 3x"
+                     alt="Connor Hood" class="portrait"
+                     width="130" height="130"
+                     fetchpriority="high" decoding="async">
+            </picture>
             <div class="ident">
                 <h1>Connor Hood</h1>
                 <p class="title">AI Specialist &middot; ML Datasets &middot; Full Stack Developer</p>
@@ -109,5 +119,6 @@
             <p><a href="#top">cd ..</a> &middot; &copy; 2026 Connor Hood</p>
         </footer>
     </main>
+    <script src="hero.js" defer></script>
 </body>
 </html>

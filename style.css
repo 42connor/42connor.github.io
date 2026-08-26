@@ -1,3 +1,37 @@
+/* ── Self-hosted fonts ─────────────────────────────────────────────────────
+   Latin subsets pulled from Google Fonts and served from this origin. Both
+   families ship as variable fonts, so one file covers every weight the CV
+   uses — and dropping fonts.googleapis.com removes a render-blocking
+   cross-origin stylesheet plus two TLS handshakes from the critical path.
+   Cormorant Garamond & JetBrains Mono are both SIL Open Font License 1.1. */
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url(fonts/cormorant-garamond.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url(fonts/cormorant-garamond-italic.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100 800;
+    font-display: swap;
+    src: url(fonts/jetbrains-mono.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
     --paper: #f5efe1;
     --paper-shade: #ebe2cd;
@@ -11,7 +45,13 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+    color-scheme: light;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
 
 body {
     font-family: 'JetBrains Mono', 'Menlo', 'Consolas', 'Courier New', monospace;
@@ -37,6 +77,66 @@ body {
         radial-gradient(ellipse at 50% 50%, rgba(255, 248, 230, 0.4), transparent 70%);
 }
 
+/* ── Generative paint layer (see hero.js) ──────────────────────────────────
+   Fixed behind everything and never interactive. Starts transparent and eases
+   in once the painting is flushed, so a visitor never watches it assemble. */
+#paint {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.1s ease-out;
+    contain: strict;
+}
+
+#paint.is-painted { opacity: 1; }
+
+/* Reduced motion: no fade, no reveal — just present. */
+#paint.is-instant {
+    transition: none;
+    opacity: 1;
+}
+
+#paint canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Reading-column veil ───────────────────────────────────────────────────
+   The watercolor fills bleed a long and deliberately random distance, so no
+   amount of placing them "in the gutter" can guarantee they stay off the text
+   — brush.clip() constrains strokes and hatch, but not fills. Rather than
+   fight that, the column gets a band of paper laid back over the painting.
+   Legibility stops depending on the seed, the margins keep their full paint,
+   and the result reads as a sheet of paper resting on a painted surface.
+   Edges are a wide gradient so there is no visible seam. */
+.veil {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.1s ease-out;
+    /* Solid out to 420px either side of centre — wider than the 360px text
+       half-column — so the gradient falloff happens out in the painted gutter
+       and never across the text itself. */
+    background: linear-gradient(
+        to right,
+        transparent 0,
+        transparent calc(50% - 560px),
+        var(--paper) calc(50% - 420px),
+        var(--paper) calc(50% + 420px),
+        transparent calc(50% + 560px),
+        transparent 100%
+    );
+}
+
+/* Only needed once there is a painting to veil. */
+#paint.is-painted ~ .veil { opacity: 0.92; }
+#paint.is-instant ~ .veil { transition: none; }
+
 main {
     max-width: 720px;
     margin: 0 auto;
@@ -51,7 +151,14 @@ main {
     padding-bottom: 1.5rem;
 }
 
+/* <picture> becomes the grid item; keep it out of the layout's way. */
+.masthead > picture {
+    display: block;
+    line-height: 0;
+}
+
 .portrait {
+    display: block;
     width: 130px;
     height: 130px;
     object-fit: cover;
@@ -287,5 +394,5 @@ footer a:hover { color: var(--ink); }
     .portrait { box-shadow: none; border: 1px solid #999; }
     hr::before { color: #999; }
     .role, .year, p strong, li strong { color: #000; background: none; border: none; }
-    .ambient { display: none; }
+    .ambient, #paint, .veil { display: none; }
 }
