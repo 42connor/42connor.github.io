@@ -11,8 +11,8 @@ dependencies to install. Open `index.html` and it works.
 | --- | --- |
 | `index.html` | The whole CV. Semantic sections, no framework. |
 | `style.css` | Parchment + gold light-mode design. Cormorant Garamond headings, JetBrains Mono body. Includes a print stylesheet that produces a clean one-page PDF. |
-| `hero.js` | Generative painting in the margins, drawn once with p5.brush. Washes, watercolor blooms, flow-field drift, plotted stroke spines, a hatch panel, and little painted sprigs and sparkles. Different on every load. |
-| `pretext.js` | The "In Practice" paragraph, laid out in userland with pretext so the prose re-flows around a drifting shape every frame. |
+| `hero.js` | Generative garden painted once with p5.brush — rose blooms, sage sprigs and gold sparkles over washes, watercolor bleeds and flow-field drift. Different on every load. On a phone, where there are no margins, it spreads behind the whole page instead of being skipped. |
+| `pretext.js` | The "In Practice" paragraph, laid out in userland with pretext so the prose re-flows around a drifting flower every frame. On a narrow column the flower pins to one edge so a phone gets the effect too. |
 | `fonts/` | Self-hosted variable woff2 subsets, so no cross-origin request blocks first paint. |
 | `img/` | Portrait at 1x/2x/3x in webp and jpg. |
 | `vendor/` | Third-party libraries, committed rather than installed. |
@@ -33,9 +33,9 @@ Both are committed so the site has no install step and no CDN dependency.
 Neither effect is load-bearing. The painting is skipped without WebGL2, on
 metered or 2G connections, and on low-core devices, falling back to the CSS
 gradient in `.ambient`. The flowed paragraph stays ordinary DOM text — always
-present for selection, screen readers, ctrl+F and print — and does not engage
-below a 480px column, where wrapping text around a shape would leave two-word
-lines. Both respect `prefers-reduced-motion`.
+present for selection, screen readers, ctrl+F and print — and the flower's size
+is capped so every line keeps a readable run at any column width. Both respect
+`prefers-reduced-motion`.
 
 ## Regenerating the share card
 

@@ -12,9 +12,10 @@
  * Marks come from several passes: flat wash() corner tints, two watercolor
  * fill() blooms, field-driven flowLine() drift, deliberate beginStroke() /
  * move() / endStroke() spines, one mass() hand-filled tint, a hatch() panel,
- * charcoal spline() accents, and generative marginalia — little painted
- * sprigs and sparkles out in the gutters, in the spirit of an illuminated
- * manuscript. No two page loads draw the same ones.
+ * charcoal spline() accents, and a generative garden — rose blooms, sage
+ * sprigs and gold sparkles, in the spirit of an illuminated manuscript. No two
+ * page loads grow the same ones. On a phone, where there are no gutters, the
+ * garden spreads across the whole page behind the CV instead of being skipped.
  *
  * p5.brush by Alejandro Campos Uribe (MIT) — see vendor/p5.brush-LICENSE.md
  */
@@ -44,13 +45,19 @@
   var RULE = ink('--rule', '#d8cdb4');
   var INK_SOFT = ink('--ink-soft', '#6a5e51');
   var SHADE = ink('--paper-shade', '#ebe2cd');
+  var ROSE = ink('--rose', '#c2707a');
+  var BLUSH = ink('--blush', '#e2b0b3');
+  var SAGE = ink('--sage', '#869176');
+  var SAGE_SOFT = ink('--sage-soft', '#adb69b');
 
-  // Inner limit for paint, measured from centre. The reading column itself is
-  // 360px either side, and .veil lays paper back over everything within 420px
-  // (fading out by 560px). Starting the paint at 470 puts it where the veil is
-  // already thinning, so the marks land in the part of the margin that is
-  // actually visible instead of being half-erased.
-  var COL_HALF = 470;
+  // Inner limit for paint, measured from centre. The reading column is 360px
+  // either side. .veil now lays paper back only within 400px (fading out by
+  // 520px) instead of 420/560, because the flowers are flat wash() shapes that
+  // stay inside their own outline — only the two bleeding watercolor fills need
+  // the column defended, and those sit far out in the gutter. Pulling this in
+  // to 400 is what lets the garden grow where it can actually be seen rather
+  // than stranded at the edge of the screen, half-erased.
+  var COL_HALF = 400;
 
   var mount = document.getElementById(MOUNT);
   var brush = null;
@@ -373,39 +380,39 @@
       });
     }
 
-    /* -- marginalia: sprigs and sparkles ---------------------------------
+    /* -- the garden: flowers, sprigs and sparkles -------------------------
        Illuminated manuscripts put small painted plants in the margins beside
-       the text. That is exactly what these are, except no two are ever the
-       same: a stem that curves as it grows, leaves alternating up it, and a
-       berry at the tip.
+       the text. That is what this is, except no two page loads grow the same
+       ones: stems that curve as they climb, sage leaves alternating up them,
+       and a rose bloom opening at the top.
 
-       Geometry note — measured, not guessed: for move(a, len), the step is
-       (cos a * len, -sin a * len). So angle 0 goes right and +90 goes UP,
-       which is what lets a sprig grow off its base instead of hanging from it.
+       Geometry note — measured, not guessed: for move(a, len) the step is
+       (cos a * len, -sin a * len). So angle 0 goes right and +90 goes UP, which
+       is what lets a stem grow off its base instead of hanging from it.
 
-       These are all stroke operations, so clip() genuinely binds them and the
-       marginalia physically cannot land on the reading column. */
+       Stems, leaves and petals are all flat wash() shapes or stroke work, so
+       nothing here bleeds the way fill() does and it can safely be planted
+       close to the reading column where it is actually visible. */
     var DEG = Math.PI / 180;
 
-    // One leaf, as a filled almond pointing along `angle`.
+    // One almond, pointing along `angle` from (x, y). Serves as both leaf and
+    // petal — the only difference is how fat and what colour.
     //
-    // Chained pen strokes cannot make a leaf — they make grass. A closed
-    // polygon can. Verified against this build: beginShape/vertex/endShape
-    // under wash() fills a custom outline, and push/translate/rotate places it.
+    // Chained pen strokes cannot make either: they make grass. A closed polygon
+    // can. Verified against this build — beginShape/vertex/endShape under
+    // wash() fills a custom outline, and push/translate/rotate places it.
     //
-    // rotate(-angle), not rotate(angle): move(a, len) steps by
-    // (cos a, -sin a), while rotate(t) maps (1,0) to (cos t, sin t). Negating
-    // is what makes a leaf lie along the stem direction instead of mirrored
-    // across it.
-    function leaf(x, y, angle, L, W, alpha) {
+    // rotate(-angle), not rotate(angle): move(a, len) steps by (cos a, -sin a)
+    // while rotate(t) maps (1,0) to (cos t, sin t). Negating is what makes the
+    // shape lie along the stem instead of mirrored across it.
+    function almond(x, y, angle, L, W, colour, alpha) {
       brush.push();
       brush.translate(x, y);
       brush.rotate(-angle);
       brush.noStroke();
-      brush.wash(GOLD, alpha);
-      // Traced parametrically rather than as a handful of hard vertices —
-      // sin(pi*t) gives an almond that is pointed at both ends, and enough
-      // steps that the edge reads as a curve instead of a facetted hexagon.
+      brush.wash(colour, alpha);
+      // Traced parametrically: sin(pi*t) gives a shape pointed at both ends,
+      // and enough steps that the edge reads as a curve, not a hexagon.
       var STEPS = 9;
       brush.beginShape();
       for (var i = 0; i <= STEPS; i++) {
@@ -421,7 +428,36 @@
       brush.pop();
     }
 
-    function sprig(baseX, baseY, height, lean) {
+    // A bloom: two offset rings of petals over a pair of sage leaves, with a
+    // gold eye. Rings rather than one, because a single ring of petals reads as
+    // a cog; overlapping two at different radii is what makes it a flower.
+    function bloomAt(cx, cy, r) {
+      var spin = rnd() * 360;
+      var warm = rnd() > 0.45;
+
+      for (var s = -1; s <= 1; s += 2) {
+        almond(cx, cy, spin + 90 + s * 118, r * 1.05, r * 0.3, SAGE, 118 + rnd() * 40);
+      }
+
+      var outer = 7 + Math.floor(rnd() * 2);
+      for (var i = 0; i < outer; i++) {
+        almond(cx, cy, spin + (i * 360) / outer, r, r * 0.44,
+               warm ? BLUSH : ROSE, 150 + rnd() * 50);
+      }
+
+      var inner = outer - 1;
+      for (var k = 0; k < inner; k++) {
+        almond(cx, cy, spin + 26 + (k * 360) / inner, r * 0.62, r * 0.3,
+               warm ? ROSE : BLUSH, 150 + rnd() * 50);
+      }
+
+      brush.noStroke();
+      brush.wash(GOLD, 190);
+      brush.circle(cx, cy, r * 0.24, 0.9);
+      brush.noWash();
+    }
+
+    function sprig(baseX, baseY, height, lean, crown) {
       var nodes = [];
       var segs = 5;
       var segLen = height / segs;
@@ -429,71 +465,139 @@
       var y = baseY;
       var ang = 90 + lean * (4 + rnd() * 7);   // +90 = straight up
 
-      // 'pen' rather than '2B': the pencils scatter their grain, which at this
-      // scale turns a stem into a smudge. A crisp line reads as drawn.
-      brush.set('pen', GOLD, 1.2 + rnd() * 0.4);
+      // 'pen' rather than '2B': the pencil brushes scatter their grain, which
+      // at this scale turns a stem into a smudge.
+      brush.set('pen', SAGE, 1.2 + rnd() * 0.45);
       brush.beginStroke('curve', x, y);
       for (var i = 0; i < segs; i++) {
-        // A steady drift in one direction is what makes a stem look grown
-        // rather than jointed.
+        // A steady drift one way is what makes a stem look grown, not jointed.
         var a = ang + lean * i * (5 + rnd() * 5) + (rnd() - 0.5) * 6;
-        brush.move(a, segLen, 0.4 + rnd() * 0.25);
+        brush.move(a, segLen, 0.42 + rnd() * 0.26);
         x += Math.cos(a * DEG) * segLen;
         y += -Math.sin(a * DEG) * segLen;
         nodes.push([x, y, a]);
       }
       brush.endStroke(ang + lean * 20, 0.14);
 
-      // One leaf per node, alternating sides. Both sides of every node crowds
-      // into a tangle at this size; alternating keeps the silhouette open.
+      // One leaf per node, alternating sides. Leaves on both sides of every
+      // node crowd into a tangle at this size; alternating keeps it open.
       for (var n = 0; n < nodes.length - 1; n++) {
-        if (rnd() > 0.9) continue;             // an occasional gap
-        var nx = nodes[n][0], ny = nodes[n][1], na = nodes[n][2];
+        if (rnd() > 0.9) continue;              // an occasional gap
         var sgn = (n % 2 === 0) ? 1 : -1;
-        var L = segLen * (0.92 - n * 0.1) * (0.85 + rnd() * 0.3);
-        leaf(
-          nx, ny,
-          na + sgn * (42 + rnd() * 16),
-          L,
-          L * (0.26 + rnd() * 0.1),
-          96 + rnd() * 42
+        var L = segLen * (0.95 - n * 0.1) * (0.85 + rnd() * 0.3);
+        almond(
+          nodes[n][0], nodes[n][1],
+          nodes[n][2] + sgn * (42 + rnd() * 16),
+          L, L * (0.3 + rnd() * 0.1),
+          rnd() > 0.35 ? SAGE : SAGE_SOFT,
+          120 + rnd() * 55
         );
       }
 
-      // A small bud closing the tip.
       var tip = nodes[nodes.length - 1];
-      brush.noStroke();
-      brush.wash(GOLD, 110 + rnd() * 40);
-      brush.circle(tip[0], tip[1], 2.6 + rnd() * 2, 0.9);
-      brush.noWash();
+      if (crown) {
+        bloomAt(tip[0], tip[1], segLen * (0.62 + rnd() * 0.3));
+      } else {
+        brush.noStroke();
+        brush.wash(rnd() > 0.5 ? ROSE : GOLD, 150 + rnd() * 40);
+        brush.circle(tip[0], tip[1], 3 + rnd() * 2.4, 0.9);
+        brush.noWash();
+      }
     }
 
-    // Four-point sparkle: a long arm and a short one, crossed. The asymmetry
+    // Four-point sparkle: one long arm and one short, crossed. The asymmetry
     // is what stops it reading as a plus sign.
     function sparkle(x, y, r) {
       brush.set('pen', GOLD, 0.85 + rnd() * 0.4);
       brush.beginStroke('curve', x, y - r);
       brush.move(-90, r * 2, 0.5);
       brush.endStroke(-90, 0.1);
-      var s = r * 0.5;
-      brush.beginStroke('curve', x - s, y);
-      brush.move(0, s * 2, 0.42);
+      var arm = r * 0.5;
+      brush.beginStroke('curve', x - arm, y);
+      brush.move(0, arm * 2, 0.42);
       brush.endStroke(0, 0.1);
     }
 
-    if (!tight) {
+    if (tight) {
+      /* Phone. There are no gutters, so there is nowhere beside the text to
+         plant anything — which is exactly why this used to be skipped and the
+         phone got an almost blank page. Instead the garden grows across the
+         whole viewport and sits behind the CV, with style.css holding #paint
+         back to half opacity at this width so it never competes with the words.
+         Clusters are pushed past the edges so they read as a page border rather
+         than as objects dropped behind the text. */
+      steps.push(function () {
+        reset();
+        var edgeX = halfW * 0.92;
+        var spots = [
+          [-edgeX, -halfH * 0.74],
+          [edgeX, -halfH * 0.34],
+          [-edgeX * 0.86, halfH * 0.28],
+          [edgeX * 0.94, halfH * 0.78]
+        ];
+        for (var i = 0; i < spots.length; i++) {
+          bloomAt(spots[i][0], spots[i][1], 20 + rnd() * 14);
+        }
+      });
+
+      steps.push(function () {
+        reset();
+        for (var i = 0; i < 3; i++) {
+          var side = i % 2 ? 1 : -1;
+          sprig(
+            side * halfW * (0.84 + rnd() * 0.12),
+            -halfH * 0.5 + rnd() * h * 0.85,
+            h * (0.1 + rnd() * 0.06),
+            side,
+            rnd() > 0.45
+          );
+        }
+      });
+
+      steps.push(function () {
+        reset();
+        for (var i = 0; i < 12; i++) {
+          // Outer thirds only. Scattered across the full width these landed on
+          // top of the words — faint, but decoration has no business there.
+          var side = rnd() > 0.5 ? 1 : -1;
+          sparkle(
+            side * halfW * (0.66 + rnd() * 0.3),
+            (rnd() - 0.5) * h * 0.94,
+            3 + rnd() * 5
+          );
+        }
+      });
+    } else {
       [-1, 1].forEach(function (side) {
         steps.push(function () {
           reset();
           clipTo(side);
           var count = roomy ? 2 : 1;
           for (var i = 0; i < count; i++) {
-            var span = Math.max(14, gutter - 96);
+            // Planted close in, where the veil has thinned but the text has
+            // not started — pushing these out to the screen edge is what made
+            // them invisible before.
             sprig(
-              side * (colHalf + 44 + rnd() * span),
-              halfH * (0.2 + rnd() * 0.6),            // low in the margin
-              h * (0.14 + rnd() * 0.08),              // grows up from there
-              rnd() > 0.5 ? 1 : -1
+              side * (colHalf + 26 + rnd() * Math.max(20, gutter * 0.42)),
+              halfH * (0.16 + rnd() * 0.62),
+              h * (0.15 + rnd() * 0.09),
+              rnd() > 0.5 ? 1 : -1,
+              true                              // every margin stem flowers
+            );
+          }
+          brush.noClip();
+        });
+
+        // A couple of loose blooms with no stem, tucked further out.
+        steps.push(function () {
+          reset();
+          clipTo(side);
+          var n = roomy ? 2 : 1;
+          for (var i = 0; i < n; i++) {
+            bloomAt(
+              side * (colHalf + 40 + rnd() * Math.max(20, gutter * 0.7)),
+              (rnd() - 0.5) * h * 0.82,
+              15 + rnd() * 13
             );
           }
           brush.noClip();
@@ -502,14 +606,14 @@
 
       steps.push(function () {
         reset();
-        var marks = roomy ? 9 : 5;
+        var marks = roomy ? 11 : 6;
         for (var i = 0; i < marks; i++) {
           var side = rnd() > 0.5 ? 1 : -1;
           clipTo(side);
           sparkle(
-            side * (colHalf + 26 + rnd() * Math.max(12, gutter - 48)),
+            side * (colHalf + 16 + rnd() * Math.max(14, gutter - 34)),
             (rnd() - 0.5) * h * 0.88,
-            5 + rnd() * 7
+            3.4 + rnd() * 5
           );
         }
         brush.noClip();

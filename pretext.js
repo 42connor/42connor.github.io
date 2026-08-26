@@ -1,5 +1,5 @@
 /*
- * pretext.js — prose that flows around a drifting ink blot, relaid every frame.
+ * pretext.js — prose that flows around a drifting flower, relaid every frame.
  *
  * The browser cannot do this. CSS `shape-outside` wraps text around a *static*
  * float, but any per-frame change to the exclusion zone means a full layout
@@ -20,10 +20,41 @@
  */
 
 const LIB = './vendor/pretext/layout.js';
-const PAD = 11;        // clearance between blot edge and text
-const MIN_RUN = 64;    // narrowest line worth setting beside the blot
+const PAD = 10;        // clearance between the bloom and the text
+const MIN_RUN = 64;    // narrowest line worth setting beside the bloom
 const MAX_ROWS = 400;  // runaway guard for the layout walk
-const SAMPLES = 18;    // blot positions sampled to fix the container height
+const SAMPLES = 18;    // bloom positions sampled to fix the container height
+const TAU = Math.PI * 2;
+
+// Below this the bloom stops drifting across the column and pins to one edge
+// instead — see bloom().
+const NARROW = 620;
+
+// Read the palette off :root so the flower can never drift from the page.
+function token(name, fallback) {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    if (v) return v;
+  } catch (e) { /* fall through */ }
+  return fallback;
+}
+
+const ROSE = token('--rose', '#c2707a');
+const BLUSH = token('--blush', '#e2b0b3');
+const GOLD = token('--gold', '#a87a2b');
+const GOLD_SOFT = token('--gold-soft', '#c9a55b');
+const SAGE = token('--sage', '#869176');
+
+// #rrggbb -> rgba(). The palette lives in CSS as hex, but every fill here needs
+// its own alpha, so they have to be combined at draw time.
+function rgba(hex, a) {
+  const h = hex.replace('#', '');
+  const n = h.length === 3
+    ? h.split('').map((c) => c + c).join('')
+    : h;
+  const i = parseInt(n, 16);
+  return `rgba(${(i >> 16) & 255}, ${(i >> 8) & 255}, ${i & 255}, ${a})`;
+}
 
 const root = document.getElementById('flow');
 const src = root && root.querySelector('.flow-source');
@@ -69,65 +100,123 @@ function typeOf(el) {
   };
 }
 
-/* ----------------------------------------------------------------- the blot */
+/* ---------------------------------------------------------------- the bloom */
 
-// Fixed radial jitter, generated once. Re-rolling it per frame would make the
-// edge shimmer; baking it in means the shape is a solid object that moves.
-const EDGE = (() => {
-  const n = 44;
-  const pts = [];
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * Math.PI * 2;
-    // Two out-of-phase harmonics: lumpy, but closed and smooth.
-    const k = 0.94 + 0.05 * Math.sin(a * 3 + 0.7) + 0.04 * Math.sin(a * 5 + 2.1);
-    pts.push([Math.cos(a) * k, Math.sin(a) * k]);
-  }
-  return pts;
-})();
-
-// Slow Lissajous drift. Kept clear of the column edges by MIN_RUN so there is
-// always a usable run of text on at least one side.
-function blot(t, colW, h, r) {
-  const ax = Math.max(0, colW * 0.5 - r - Math.max(MIN_RUN, colW * 0.3) - PAD);
-  const ay = Math.max(0, h * 0.5 - r * 0.75);
-  return {
-    x: colW * 0.5 + Math.sin(t * 0.000191) * ax,
-    y: h * 0.5 + Math.sin(t * 0.000122 + 1.1) * ay,
-    r
-  };
+// A petal, pointing up from the origin. Two mirrored beziers give a teardrop
+// with a soft shoulder — a plain ellipse reads as a lozenge, not a petal.
+function petal(ctx, len, wid) {
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(wid, -len * 0.2, wid * 0.74, -len * 0.9, 0, -len);
+  ctx.bezierCurveTo(-wid * 0.74, -len * 0.9, -wid, -len * 0.2, 0, 0);
+  ctx.closePath();
 }
 
-function paintBlot(ctx, b) {
+function ring(ctx, n, len, wid, fill, edge, offset) {
+  for (let i = 0; i < n; i++) {
+    ctx.save();
+    ctx.rotate(offset + (i * TAU) / n);
+    petal(ctx, len, wid);
+    ctx.fillStyle = fill;
+    ctx.fill();
+    if (edge) {
+      ctx.strokeStyle = edge;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+// The thing the prose flows around. Two offset rings of petals and a gold
+// centre, sized so the drawn flower nearly fills its own exclusion circle —
+// a shape much smaller than the gap it makes reads as a bug in the layout.
+function drawBloom(ctx, b) {
+  const r = b.r;
   ctx.save();
   ctx.translate(b.x, b.y);
 
+  // Sits the bloom on the paper instead of floating it on top.
+  const halo = ctx.createRadialGradient(0, 0, r * 0.1, 0, 0, r * 1.08);
+  halo.addColorStop(0, rgba(GOLD, 0.10));
+  halo.addColorStop(0.7, rgba(GOLD, 0.05));
+  halo.addColorStop(1, rgba(GOLD, 0));
+  ctx.fillStyle = halo;
   ctx.beginPath();
-  ctx.moveTo(EDGE[0][0] * b.r, EDGE[0][1] * b.r);
-  for (let i = 1; i < EDGE.length; i++) {
-    ctx.lineTo(EDGE[i][0] * b.r, EDGE[i][1] * b.r);
-  }
-  ctx.closePath();
-
-  const g = ctx.createRadialGradient(0, 0, b.r * 0.08, 0, 0, b.r);
-  g.addColorStop(0, 'rgba(168, 122, 43, 0.34)');
-  g.addColorStop(0.5, 'rgba(168, 122, 43, 0.23)');
-  g.addColorStop(0.84, 'rgba(201, 165, 91, 0.14)');
-  g.addColorStop(1, 'rgba(201, 165, 91, 0.04)');
-  ctx.fillStyle = g;
+  ctx.arc(0, 0, r * 1.08, 0, TAU);
   ctx.fill();
 
-  // A defined rim matters more than it looks like it should: without it the
-  // shape reads as a smudge and the gap in the text looks like a bug.
-  ctx.strokeStyle = 'rgba(168, 122, 43, 0.34)';
-  ctx.lineWidth = 1.25;
-  ctx.stroke();
+  // Two leaves tucked behind, so it reads as cut rather than drawn floating.
+  ctx.save();
+  ctx.rotate(b.a * 0.5);
+  for (let sgn = -1; sgn <= 1; sgn += 2) {
+    ctx.save();
+    ctx.rotate(sgn * 2.3);
+    petal(ctx, r * 1.02, r * 0.3);
+    ctx.fillStyle = rgba(SAGE, 0.5);
+    ctx.fill();
+    ctx.restore();
+  }
   ctx.restore();
+
+  ctx.rotate(b.a);
+  ring(ctx, 8, r * 0.94, r * 0.40, rgba(BLUSH, 0.88), rgba(ROSE, 0.42), 0);
+  ring(ctx, 7, r * 0.60, r * 0.29, rgba(ROSE, 0.62), rgba(ROSE, 0.5), Math.PI / 7);
+  ctx.rotate(-b.a);
+
+  const eye = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 0.27);
+  eye.addColorStop(0, rgba(GOLD_SOFT, 0.98));
+  eye.addColorStop(1, rgba(GOLD, 0.92));
+  ctx.fillStyle = eye;
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.24, 0, TAU);
+  ctx.fill();
+
+  // Stamen dots, counter-rotating so the centre reads as its own part.
+  ctx.fillStyle = rgba(GOLD, 0.55);
+  for (let i = 0; i < 9; i++) {
+    const a = -b.a * 1.6 + (i * TAU) / 9;
+    ctx.beginPath();
+    ctx.arc(Math.cos(a) * r * 0.15, Math.sin(a) * r * 0.15, Math.max(0.8, r * 0.028), 0, TAU);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// Where the bloom is, and how far it has turned, at time t.
+//
+// On a wide column it drifts a long way across, and the prose reorganises
+// around it. On a narrow one that same drift would squeeze the text from both
+// sides at once and leave three-word lines, so instead the bloom pins to one
+// edge and only travels vertically — which is what lets a phone have the effect
+// at all rather than being told it cannot.
+function bloom(t, colW, h, r, pinned) {
+  const ay = Math.max(0, h * 0.5 - r * 0.7);
+  const spin = t * 0.000045;
+
+  if (pinned) {
+    return {
+      x: r + PAD,
+      y: h * 0.5 + Math.sin(t * 0.000144) * ay,
+      r,
+      a: spin
+    };
+  }
+
+  const ax = Math.max(0, colW * 0.5 - r - Math.max(MIN_RUN, colW * 0.3) - PAD);
+  return {
+    x: colW * 0.5 + Math.sin(t * 0.000191) * ax,
+    y: h * 0.5 + Math.sin(t * 0.000122 + 1.1) * ay,
+    r,
+    a: spin
+  };
 }
 
 /* ----------------------------------------------------------------- the flow */
 
 // Walks the paragraph one line at a time, narrowing each line by however much
-// the blot intrudes on that row. `onLine` is optional: omitting it turns this
+// the bloom intrudes on that row. `onLine` is optional: omitting it turns this
 // into a pure height measurement, which is how the container height gets fixed
 // without ever drawing.
 function flow(api, P, b, colW, lh, onLine) {
@@ -138,7 +227,7 @@ function flow(api, P, b, colW, lh, onLine) {
     let x = 0;
     let w = colW;
 
-    // Widest horizontal reach of the blot anywhere in this row's band — use
+    // Widest horizontal reach of the bloom anywhere in this row's band — use
     // the closest point, so the text clears the shape at its fattest.
     const dy = b.y >= y && b.y <= y + lh
       ? 0
@@ -147,9 +236,9 @@ function flow(api, P, b, colW, lh, onLine) {
     if (dy < b.r) {
       const half = Math.sqrt(b.r * b.r - dy * dy) + PAD;
       if (b.x > colW * 0.5) {
-        w = Math.min(colW, b.x - half);            // blot right: set to its left
+        w = Math.min(colW, b.x - half);            // bloom right: set to its left
       } else {
-        x = Math.max(0, b.x + half);               // blot left: set to its right
+        x = Math.max(0, b.x + half);               // bloom left: set to its right
         w = colW - x;
       }
     }
@@ -195,7 +284,8 @@ async function boot() {
   let P = null;      // prepared text
   let colW = 0;
   let height = 0;
-  let baseH = 0;     // natural (unobstructed) height — drives the blot path
+  let baseH = 0;     // natural (unobstructed) height — drives the bloom path
+  let pinned = false;  // narrow column: bloom hugs one edge instead of drifting
   let radius = 0;
 
   // prepare() is the expensive half; it only has to be redone when the text or
@@ -221,30 +311,39 @@ async function boot() {
     colW = w;
     baseH = api.layout(P, colW, type.lh).height;
 
-    // Below this there is no honest way to wrap text around a shape: the blot
-    // would leave two-word lines whichever way it is capped. A phone gets the
-    // plain DOM paragraph, which is a perfectly good paragraph.
-    if (colW < 480) return false;
+    // A narrow column gets the effect too, just arranged differently: the bloom
+    // pins to one edge rather than crossing the column, so the text is only
+    // ever squeezed from one side. That is the whole reason a phone can have
+    // this at all instead of being handed the plain paragraph.
+    pinned = colW < NARROW;
 
-    // Hard geometric ceiling on the blot. The drift keeps its centre inside
-    // [r + run + PAD, colW - r - run - PAD], so capping the radius here
-    // guarantees every row keeps at least `run` of usable width — both an
-    // absolute floor and 30% of the column, because MIN_RUN alone is enough to
-    // stop the layout walk stalling but not enough to stay readable.
+    // Hard geometric ceiling on the bloom, so every row keeps a readable run.
     // Without a cap of some kind a narrow column starves every line and the
-    // walk spins to MAX_ROWS placing no text at all.
-    const run = Math.max(MIN_RUN, colW * 0.3);
-    const ceiling = colW * 0.5 - run - PAD;
-    radius = Math.min(colW * 0.26, baseH * 0.3, ceiling);
-    if (radius < 40) return false;   // column too tight for the effect to read
+    // layout walk spins to MAX_ROWS placing no text at all.
+    let ceiling;
+    if (pinned) {
+      // Centre sits at r + PAD, so a line beside it starts at ~2r + 2·PAD.
+      // Leave at least 58% of the column for words: at 52% a phone was down to
+      // three or four words a line beside the bloom, which reads as cramped
+      // rather than as a magazine wrap.
+      ceiling = (colW * 0.42 - 2 * PAD) / 2;
+    } else {
+      // Drift keeps the centre inside [r + run + PAD, colW - r - run - PAD].
+      // MIN_RUN alone stops the walk stalling but is not enough to stay
+      // readable, hence 30% of the column as well.
+      const run = Math.max(MIN_RUN, colW * 0.3);
+      ceiling = colW * 0.5 - run - PAD;
+    }
+    radius = Math.min(colW * 0.3, baseH * 0.32, ceiling);
+    if (radius < 30 || colW < 240) return false;   // genuinely no room
 
-    // The blot changes the line count as it moves, so the paragraph's height
+    // The bloom changes the line count as it moves, so the paragraph's height
     // is not constant. Sampling the path and taking the worst case fixes the
     // container once — no layout shift while it drifts. Cheap: pure arithmetic,
     // no drawing, no DOM.
     let worst = baseH;
     for (let i = 0; i < SAMPLES; i++) {
-      const b = blot((i / SAMPLES) * 33000, colW, baseH, radius);
+      const b = bloom((i / SAMPLES) * 33000, colW, baseH, radius, pinned);
       const h = flow(api, P, b, colW, type.lh, null);
       if (h > worst) worst = h;
     }
@@ -260,9 +359,9 @@ async function boot() {
   }
 
   function draw(t) {
-    const b = blot(t, colW, baseH, radius);
+    const b = bloom(t, colW, baseH, radius, pinned);
     ctx.clearRect(0, 0, colW, height);
-    paintBlot(ctx, b);
+    drawBloom(ctx, b);
 
     ctx.font = type.spec;
     if ('letterSpacing' in ctx) ctx.letterSpacing = type.ls + 'px';
