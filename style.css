@@ -88,6 +88,13 @@ body {
 /* ── Generative paint layer (see hero.js) ──────────────────────────────────
    Fixed behind everything and never interactive. Starts transparent and eases
    in once the painting is flushed, so a visitor never watches it assemble. */
+/* Behind the text by DEFAULT, and only promoted to the front by .is-front once
+   hero.js has recovered an alpha channel for the painting (see lift()). The
+   painting is laid down on opaque paper because p5.brush cannot antialias on a
+   transparent buffer, and an opaque canvas in front of the page would hide the
+   whole CV — so the safe stacking is the one that needs no cooperation.
+   pointer-events stays none either way, so selection, links and the print
+   button all work straight through the painting. */
 #paint {
     position: fixed;
     inset: 0;
@@ -99,6 +106,12 @@ body {
 }
 
 #paint.is-painted { opacity: 1; }
+
+/* Painted on the page rather than under it: the blooms keep their full colour
+   instead of showing through the reading column. Legibility is purely
+   geometric here — see COL_HALF in hero.js: nothing is drawn within 400px of
+   centre, and the text column is 360 either side. */
+#paint.is-front { z-index: 2; }
 
 /* Reduced motion: no fade, no reveal — just present. */
 #paint.is-instant {
@@ -112,52 +125,24 @@ body {
     height: 100%;
 }
 
-/* ── Reading-column veil ───────────────────────────────────────────────────
-   The watercolor fills bleed a long and deliberately random distance, so no
-   amount of placing them "in the gutter" can guarantee they stay off the text
-   — brush.clip() constrains strokes and hatch, but not fills. Rather than
-   fight that, the column gets a band of paper laid back over the painting.
-   Legibility stops depending on the seed, the margins keep their full paint,
-   and the result reads as a sheet of paper resting on a painted surface.
-   Edges are a wide gradient so there is no visible seam. */
-.veil {
-    position: fixed;
-    inset: 0;
+/* ── Full-bleed composition ────────────────────────────────────────────────
+   A narrow screen has no gutters, so there is nowhere beside the text to put a
+   garden and hero.js paints across the whole viewport instead. That has to go
+   BEHIND the words — foregrounding a full-bleed wallpaper would drop petals on
+   every line — and dialled back, so it reads as paper the CV is printed on.
+   Contrast stays comfortable: the ink is near-black and the petals only tint.
+
+   Keyed off the class hero.js sets, NOT a media query. The script is the only
+   thing that knows which composition it drew, and a second threshold here
+   would drift out of step with it — the gap between the two being exactly
+   where petals would land on the text. */
+#paint.is-bleed {
     z-index: -1;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 1.1s ease-out;
-    /* Solid out to 400px either side of centre — still wider than the 360px
-       text half-column, so the falloff happens in the gutter and never across
-       the text. Narrowed from 420/560: the garden is drawn with flat wash()
-       shapes that stay inside their own outline, so only the two bleeding
-       watercolor fills actually need this, and holding it back this far is what
-       lets the flowers read instead of being wiped out. */
-    background: linear-gradient(
-        to right,
-        transparent 0,
-        transparent calc(50% - 520px),
-        var(--paper) calc(50% - 400px),
-        var(--paper) calc(50% + 400px),
-        transparent calc(50% + 520px),
-        transparent 100%
-    );
 }
 
-/* Only needed once there is a painting to veil. */
-#paint.is-painted ~ .veil { opacity: 0.85; }
-#paint.is-instant ~ .veil { transition: none; }
-
-/* ── Phone ─────────────────────────────────────────────────────────────────
-   A narrow screen has no gutters, so there is nowhere beside the text to put a
-   garden. Rather than skip it — which left the phone with an almost blank page
-   — hero.js paints across the whole viewport and the art simply sits behind the
-   CV, dialled back far enough to stay well clear of the text.
-   The veil would erase all of it at this width, so it goes. Contrast is still
-   comfortable: the ink is near-black and the petals only tint the paper. */
-@media (max-width: 700px) {
-    .veil { display: none; }
-    #paint.is-painted, #paint.is-instant { opacity: 0.5; }
+#paint.is-bleed.is-painted,
+#paint.is-bleed.is-instant {
+    opacity: 0.5;
 }
 
 main {
@@ -464,6 +449,10 @@ footer .shell:focus-visible {
     border: 0;
 }
 
+.flow.is-flowing .flow-canvas.can-grab { cursor: grab; }
+.flow.is-flowing .flow-canvas.is-held { cursor: grabbing; }
+.flow.is-flowing .flow-canvas { -webkit-user-select: none; user-select: none; }
+
 /* Responsive */
 @media (max-width: 600px) {
     body { font-size: 14px; padding: 2.5rem 1.25rem 3.5rem; }
@@ -499,7 +488,7 @@ footer .shell:focus-visible {
     .portrait { box-shadow: none; border: 1px solid #999; }
     hr::before { color: #999; }
     .role, .year, p strong, li strong { color: #000; background: none; border: none; }
-    .ambient, #paint, .veil, footer .shell { display: none; }
+    .ambient, #paint, footer .shell { display: none; }
 
     /* Hand the real paragraph back to the printer. The footnote goes with the
        canvas — on paper nothing was laid out per frame. */

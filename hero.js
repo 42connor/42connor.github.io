@@ -40,6 +40,19 @@
   }
 
   var PAPER = ink('--paper', '#f5efe1');
+
+  // Deviation from paper, in 0-255, at which a mark counts as fully opaque.
+  // Below it a mark keeps proportional translucency — see lift().
+  var LIFT_T = 46;
+
+  function rgbOf(hex) {
+    var h = String(hex).trim().replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  var PAPER_RGB = rgbOf(PAPER);
   var GOLD = ink('--gold', '#a87a2b');
   var GOLD_SOFT = ink('--gold-soft', '#c9a55b');
   var RULE = ink('--rule', '#d8cdb4');
@@ -51,13 +64,21 @@
   var SAGE_SOFT = ink('--sage-soft', '#adb69b');
 
   // Inner limit for paint, measured from centre. The reading column is 360px
-  // either side. .veil now lays paper back only within 400px (fading out by
-  // 520px) instead of 420/560, because the flowers are flat wash() shapes that
-  // stay inside their own outline — only the two bleeding watercolor fills need
-  // the column defended, and those sit far out in the gutter. Pulling this in
-  // to 400 is what lets the garden grow where it can actually be seen rather
-  // than stranded at the edge of the screen, half-erased.
+  // either side, so 400 leaves a 40px cordon around the text.
+  //
+  // This is now the ONLY thing keeping paint off the words: #paint sits in
+  // front of the text, and the paper veil that used to be laid back over the
+  // column has been retired — in front of the painting it would have done
+  // nothing anyway. Legibility is geometric from here on.
   var COL_HALF = 400;
+
+  // Below this much free margin there is nowhere beside the text to paint, and
+  // the composition switches to a full-bleed wallpaper behind the page. Kept
+  // here rather than duplicated as a CSS breakpoint: hero.js is the only thing
+  // that knows which composition it actually drew, so it tells the stylesheet
+  // by way of the .is-bleed class. Two independent thresholds would drift, and
+  // the gap between them would put petals on top of the words.
+  var BLEED_BELOW = 60;
 
   var mount = document.getElementById(MOUNT);
   var brush = null;
@@ -67,6 +88,9 @@
   // Bumped on every paint() so a resize can abandon a painting that is still
   // being laid down instead of the two fighting over one canvas.
   var generation = 0;
+  // Which composition the current painting is: full-bleed wallpaper behind the
+  // text, or a margin garden that may come to the front.
+  var bleed = false;
 
   /* ---------------------------------------------------------------- gating */
 
@@ -109,7 +133,7 @@
     var steps = [];
 
     var roomy = gutter >= 150;
-    var tight = gutter < 60;
+    var tight = gutter < BLEED_BELOW;
 
     function reset() {
       brush.noStroke();
@@ -185,10 +209,14 @@
           // Nominal inner edge sits ~0.47 * gutter clear of the text column;
           // watercolor bleed spreads well past the radius it is given, and
           // that headroom is what keeps it off the reading area.
+          // fill() is the one operation clip() cannot hold, and with the
+          // painting in front of the text an escaped bleed would land on the
+          // words rather than under them. Held out in the far half of the
+          // gutter, with the spread aimed at the page edge.
           brush.circle(
-            side * (colHalf + gutter * 0.75),
+            side * (colHalf + gutter * 0.82),
             (i ? -1 : 1) * halfH * (0.24 + rnd() * 0.3),
-            Math.max(44, gutter * 0.28),
+            Math.max(40, gutter * 0.22),
             0.9
           );
         });
@@ -395,6 +423,20 @@
        close to the reading column where it is actually visible. */
     var DEG = Math.PI / 180;
 
+    // Fills ignore clip(), and the painting now sits IN FRONT of the text, so
+    // the cordon has to be enforced per shape rather than trusted to placement
+    // arithmetic. `reach` is how far the shape can extend back toward centre.
+    //
+    // Normally a no-op — everything is planted well clear. It exists because
+    // getting this wrong once already put a bloom on the footnote, and a
+    // slightly displaced leaf is a far better failure than a petal on a word.
+    function cordonX(x, reach) {
+      if (tight) return x;                 // full-bleed composition, by design
+      var s = x < 0 ? -1 : 1;
+      var min = colHalf + reach;
+      return Math.abs(x) < min ? s * min : x;
+    }
+
     // One almond, pointing along `angle` from (x, y). Serves as both leaf and
     // petal — the only difference is how fat and what colour.
     //
@@ -407,7 +449,7 @@
     // shape lie along the stem instead of mirrored across it.
     function almond(x, y, angle, L, W, colour, alpha) {
       brush.push();
-      brush.translate(x, y);
+      brush.translate(cordonX(x, L), y);
       brush.rotate(-angle);
       brush.noStroke();
       brush.wash(colour, alpha);
@@ -434,6 +476,8 @@
     function bloomAt(cx, cy, r) {
       var spin = rnd() * 360;
       var warm = rnd() > 0.45;
+      // Petals reach ~1.05r in every direction from the centre.
+      cx = cordonX(cx, r * 1.1);
 
       for (var s = -1; s <= 1; s += 2) {
         almond(cx, cy, spin + 90 + s * 118, r * 1.05, r * 0.3, SAGE, 118 + rnd() * 40);
@@ -574,14 +618,26 @@
           clipTo(side);
           var count = roomy ? 2 : 1;
           for (var i = 0; i < count; i++) {
-            // Planted close in, where the veil has thinned but the text has
-            // not started — pushing these out to the screen edge is what made
-            // them invisible before.
+            // Planted close in, just outside the text cordon — pushing these
+            // out toward the screen edge is what made them invisible before.
+            //
+            // Two things keep the plant off the words, and both matter now the
+            // painting is in front of them. The lean is forced OUTWARD, so a
+            // stem can only ever curve away from the column; left free it
+            // wandered up to ~100px inward over five segments and carried its
+            // bloom onto the text. And the base is set back far enough for the
+            // widest inward-pointing leaf plus the crowning bloom's petals,
+            // since both are wash() fills and clip() cannot hold them.
             sprig(
-              side * (colHalf + 26 + rnd() * Math.max(20, gutter * 0.42)),
+              side * (colHalf + 58 + rnd() * Math.max(16, gutter * 0.34)),
               halfH * (0.16 + rnd() * 0.62),
               h * (0.15 + rnd() * 0.09),
-              rnd() > 0.5 ? 1 : -1,
+              // -side, not side. ang = 90 + lean*(4..11) and the step is
+              // (cos a, -sin a), so a lean that LOWERS the angle below 90
+              // drives x positive. On the left gutter positive x is inward, so
+              // `side` curved stems straight at the column — which is how a
+              // bloom ended up on the footnote.
+              -side,
               true                              // every margin stem flowers
             );
           }
@@ -594,10 +650,15 @@
           clipTo(side);
           var n = roomy ? 2 : 1;
           for (var i = 0; i < n; i++) {
+            var r = 15 + rnd() * 13;
+            // Petals reach ~1.05r, so the centre has to clear the cordon by
+            // more than the radius or a petal tip lands in the margin of the
+            // text block.
+            var reach = colHalf + r * 1.2;
             bloomAt(
-              side * (colHalf + 40 + rnd() * Math.max(20, gutter * 0.7)),
+              side * (reach + rnd() * Math.max(20, gutter * 0.66)),
               (rnd() - 0.5) * h * 0.82,
-              15 + rnd() * 13
+              r
             );
           }
           brush.noClip();
@@ -639,6 +700,226 @@
     return steps;
   }
 
+  /* --------------------------------------------------------------- alpha lift */
+
+  // Turns the finished painting into something that can sit IN FRONT of the
+  // text.
+  //
+  // p5.brush has to paint on an opaque substrate: measured on this build, a
+  // transparent buffer renders every pixel either fully opaque or fully clear
+  // — no antialiasing, no soft wash edges at all. So the painting is still laid
+  // down on opaque paper, and the alpha channel is recovered afterwards by
+  // comparing each pixel against the paper colour it was painted over.
+  //
+  // The decomposition is exact rather than approximate. For a pixel C over
+  // paper P, take m as the largest per-channel deviation, a = min(1, m/LIFT_T),
+  // and S = P + (C - P)/a. Compositing S at alpha a back over P gives
+  // a·S + (1-a)·P = P + (C - P) = C, so the page looks identical where paper is
+  // what lies behind. Where TEXT lies behind instead, strong marks cover it and
+  // faint washes tint it — which is the entire point.
+  //
+  // Runs once, after the last stroke, and replaces the WebGL canvas with a 2D
+  // one. Returns false if anything refuses, in which case the caller leaves the
+  // painting where it has always been: behind the words, where an opaque canvas
+  // is harmless.
+  // The alpha pass itself. Takes a canvas painted over opaque paper and returns
+  // a new 2D canvas carrying the same image with a recovered alpha channel, or
+  // null if the pixels cannot be read.
+  function liftPixels(src) {
+    var cw = src.width;
+    var ch = src.height;
+    var flat, g, img;
+
+    try {
+      flat = document.createElement('canvas');
+      flat.width = cw;
+      flat.height = ch;
+      g = flat.getContext('2d', { willReadFrequently: true });
+      if (!g) return null;
+      g.drawImage(src, 0, 0);
+      img = g.getImageData(0, 0, cw, ch);
+    } catch (e) {
+      return null; // tainted or oversized buffer
+    }
+
+    var d = img.data;
+    var pr = PAPER_RGB[0];
+    var pg = PAPER_RGB[1];
+    var pb = PAPER_RGB[2];
+
+    for (var i = 0; i < d.length; i += 4) {
+      var dr = d[i] - pr;
+      var dg = d[i + 1] - pg;
+      var db = d[i + 2] - pb;
+
+      var m = dr < 0 ? -dr : dr;
+      var t = dg < 0 ? -dg : dg;
+      if (t > m) m = t;
+      t = db < 0 ? -db : db;
+      if (t > m) m = t;
+
+      if (m === 0) {
+        d[i + 3] = 0;              // untouched paper becomes nothing
+        continue;
+      }
+
+      var a = m / LIFT_T;
+      if (a > 1) a = 1;
+
+      // Uint8ClampedArray rounds and clamps these for us.
+      d[i] = pr + dr / a;
+      d[i + 1] = pg + dg / a;
+      d[i + 2] = pb + db / a;
+      d[i + 3] = a * 255;
+    }
+
+    try {
+      g.putImageData(img, 0, 0);
+    } catch (e) {
+      return null;
+    }
+
+    return flat;
+  }
+
+  function lift() {
+    if (!canvas) return false;
+    var flat = liftPixels(canvas);
+    if (!flat) return false;
+
+    flat.setAttribute('aria-hidden', 'true');
+    flat.id = 'paint-canvas';
+    if (canvas.parentNode) canvas.parentNode.replaceChild(flat, canvas);
+    else mount.appendChild(flat);
+    canvas = flat;
+    return true;
+  }
+
+  /* ------------------------------------------------------------ bloom sprite */
+
+  // The flower the "In Practice" prose flows around is redrawn every frame,
+  // because it moves — and p5.brush is nowhere near fast enough to repaint
+  // watercolour petals sixty times a second. Its own documentation says the
+  // library suits high-resolution artwork rather than real-time work. That is
+  // why the flower was a plain vector shape, and it is the honest constraint.
+  //
+  // It does not have to be repainted, though. Painted ONCE into a sprite and
+  // then blitted, real bleed and brush texture cost nothing per frame.
+  //
+  // Everything touching p5.brush also stays in this one file, which settles the
+  // other objection: two modules driving the library's module-level state would
+  // contend over it. pretext.js never sees brush at all, only a finished
+  // bitmap. Painted after lift() has already swapped the page's painting for a
+  // plain 2D canvas, so creating this extra brush canvas cannot disturb it.
+  var sprite = null;
+
+  function spriteAlmond(angle, L, W, colour, alpha, bleed) {
+    brush.push();
+    brush.rotate(-angle);
+    brush.noStroke();
+    if (bleed) {
+      // Real watercolour: the petals bleed into each other, which is the whole
+      // reason for going through the library instead of filling a bezier.
+      //
+      // The bleed is AIMED along the petal. Left to pick its own direction —
+      // fillBleed(amount, 'out') with no angle — every petal wandered off
+      // somewhere different and the bloom came out lopsided instead of radial.
+      brush.fillBleed(bleed, 'out', angle);
+      brush.fillTexture(0.55, 0.34, false);
+      brush.fill(colour, alpha);
+    } else {
+      brush.wash(colour, alpha);
+    }
+    var STEPS = 9;
+    brush.beginShape();
+    for (var i = 0; i <= STEPS; i++) {
+      var t = i / STEPS;
+      brush.vertex(L * t, -W * Math.pow(Math.sin(Math.PI * t), 0.75));
+    }
+    for (var j = STEPS - 1; j > 0; j--) {
+      var u = j / STEPS;
+      brush.vertex(L * u, W * Math.pow(Math.sin(Math.PI * u), 0.75));
+    }
+    brush.endShape(true);
+    brush.noFill();
+    brush.noWash();
+    brush.pop();
+  }
+
+  function paintSprite() {
+    var SPR = 320;
+    var host = document.createElement('div');
+    host.style.cssText =
+      'position:absolute;left:-99999px;top:0;width:0;height:0;overflow:hidden;pointer-events:none';
+    document.body.appendChild(host);
+
+    var tmp = null;
+    try {
+      tmp = brush.createCanvas(SPR, SPR, {
+        pixelDensity: 1,
+        parent: host,
+        id: 'bloom-sprite'
+      });
+      brush.angleMode(brush.DEGREES);
+      brush.seed(Math.floor(Math.random() * 1e9));
+      brush.noiseSeed(Math.floor(Math.random() * 1e9));
+      brush.scaleBrushes(1);
+      brush.clear(PAPER);
+
+      // Held well inside the canvas: watercolour bleed spreads a long way past
+      // the radius it is given, and anything past the edge is simply lost.
+      var r = SPR * 0.26;
+      var spin = Math.random() * 360;
+
+      for (var s = -1; s <= 1; s += 2) {
+        spriteAlmond(spin + 90 + s * 118, r * 1.06, r * 0.32, SAGE, 175, 0.04);
+      }
+
+      var outer = 8;
+      for (var i = 0; i < outer; i++) {
+        spriteAlmond(spin + (i * 360) / outer, r, r * 0.44, BLUSH, 225, 0.05);
+      }
+
+      var inner = 7;
+      for (var k = 0; k < inner; k++) {
+        spriteAlmond(spin + 26 + (k * 360) / inner, r * 0.62, r * 0.3, ROSE, 215, 0.045);
+      }
+
+      // mass() for the eye: hand-filled overlapping strokes read as pollen in a
+      // way a flat disc does not.
+      brush.noStroke();
+      brush.mass('pastel', GOLD, {
+        precision: 0.5,
+        strength: 0.85,
+        gradient: 0.3,
+        outline: false
+      });
+      brush.circle(0, 0, r * 0.26, 0.9);
+      brush.noMass();
+
+      brush.render();
+      sprite = liftPixels(tmp);
+    } catch (e) {
+      sprite = null;
+    }
+
+    try {
+      if (tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+      if (host.parentNode) host.parentNode.removeChild(host);
+    } catch (e) { /* nothing to do */ }
+
+    if (sprite) {
+      // pretext.js starts with its own vector flower and upgrades to this if and
+      // when it arrives, so a device where the painting was declined still gets
+      // a flower.
+      window.__garden = { bloom: sprite };
+      try {
+        window.dispatchEvent(new CustomEvent('garden:bloom'));
+      } catch (e) { /* no CustomEvent, the polling path still finds it */ }
+    }
+    return sprite;
+  }
+
   /* -------------------------------------------------------------- scheduling */
 
   function paint() {
@@ -674,6 +955,12 @@
     // is seamless against the rest of the page.
     brush.clear(PAPER);
 
+    // The stylesheet needs to know whether this is a margin garden (in front of
+    // the text) or a full-bleed wallpaper (behind it, dialled back).
+    bleed = Math.max(0, w / 2 - COL_HALF) < BLEED_BELOW;
+    mount.classList.toggle('is-bleed', bleed);
+    mount.classList.remove('is-front');
+
     var steps = build(w, h);
     var i = 0;
 
@@ -704,7 +991,13 @@
       if (i < steps.length) {
         requestAnimationFrame(chunk);
       } else {
+        // Only claim the foreground once the painting actually has an alpha
+        // channel. A full-bleed composition stays behind the words regardless.
+        if (!bleed && lift()) mount.classList.add('is-front');
         mount.classList.add('is-painted');
+        // Only once, and only after the page's own painting is safely a plain
+        // 2D canvas.
+        if (!sprite) paintSprite();
       }
     }
 

@@ -128,9 +128,31 @@ function ring(ctx, n, len, wid, fill, edge, offset) {
   }
 }
 
-// The thing the prose flows around. Two offset rings of petals and a gold
-// centre, sized so the drawn flower nearly fills its own exclusion circle —
-// a shape much smaller than the gap it makes reads as a bug in the layout.
+// hero.js paints one watercolour bloom into a sprite, once, and hands it over.
+// If it is there we blit that instead of drawing vectors: real bleed and brush
+// texture for nothing per frame. If it never arrives — painting declined, no
+// WebGL2, metered connection — the vector flower below stands in, so this page
+// has a flower either way.
+function spriteBloom() {
+  const g = window.__garden;
+  return (g && g.bloom) || null;
+}
+
+function drawSprite(ctx, b, img) {
+  ctx.save();
+  ctx.translate(b.x, b.y);
+  ctx.rotate(b.a);
+  // The sprite is painted with its bloom occupying 0.26 of the sprite canvas,
+  // so it has to be drawn at ~3.85x the exclusion radius for the petals to land
+  // on that circle. The rest of the sprite is the margin its bleed needed.
+  const d = b.r * 3.85;
+  ctx.drawImage(img, -d / 2, -d / 2, d, d);
+  ctx.restore();
+}
+
+// Fallback flower, drawn as vectors. Two offset rings of petals and a gold
+// centre, sized so it nearly fills its own exclusion circle — a shape much
+// smaller than the gap it makes reads as a bug in the layout.
 function drawBloom(ctx, b) {
   const r = b.r;
   ctx.save();
@@ -212,6 +234,20 @@ function bloom(t, colW, h, r, pinned) {
     a: spin
   };
 }
+
+// Where a held or thrown bloom is allowed to be. Same ceilings measure() uses
+// for the drift path, so a dragged flower can never starve a row of text.
+function bounds(colW, h, r, pinned) {
+  const ay = Math.max(0, h * 0.5 - r * 0.7);
+  if (pinned) {
+    return { x0: r + PAD, x1: r + PAD, y0: h * 0.5 - ay, y1: h * 0.5 + ay };
+  }
+  const run = Math.max(MIN_RUN, colW * 0.3);
+  const x0 = r + run + PAD;
+  return { x0, x1: Math.max(x0, colW - x0), y0: h * 0.5 - ay, y1: h * 0.5 + ay };
+}
+
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 /* ----------------------------------------------------------------- the flow */
 
@@ -347,6 +383,21 @@ async function boot() {
       const h = flow(api, P, b, colW, type.lh, null);
       if (h > worst) worst = h;
     }
+    // A dragged bloom can sit anywhere in its bounds, not just on the drift
+    // path, so sweep a grid of them too. Still pure arithmetic.
+    const bd = bounds(colW, baseH, radius, pinned);
+    for (let gx = 0; gx < 5; gx++) {
+      for (let gy = 0; gy < 9; gy++) {
+        const b = {
+          x: bd.x0 + ((bd.x1 - bd.x0) * gx) / 4,
+          y: bd.y0 + ((bd.y1 - bd.y0) * gy) / 8,
+          r: radius,
+          a: 0
+        };
+        const h = flow(api, P, b, colW, type.lh, null);
+        if (h > worst) worst = h;
+      }
+    }
     height = worst + type.lh;
 
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -358,10 +409,26 @@ async function boot() {
     return true;
   }
 
-  function draw(t) {
+  // Offset from the drift path. Zero at rest; the pointer sets it while the
+  // bloom is held, and a spring walks it back to zero after release, carrying
+  // whatever velocity the throw had.
+  const off = { x: 0, y: 0, vx: 0, vy: 0 };
+  let held = false;
+
+  function place(t) {
     const b = bloom(t, colW, baseH, radius, pinned);
+    const bd = bounds(colW, baseH, radius, pinned);
+    b.x = clamp(b.x + off.x, bd.x0, bd.x1);
+    b.y = clamp(b.y + off.y, bd.y0, bd.y1);
+    return b;
+  }
+
+  function draw(t) {
+    const b = place(t);
     ctx.clearRect(0, 0, colW, height);
-    drawBloom(ctx, b);
+    const img = spriteBloom();
+    if (img) drawSprite(ctx, b, img);
+    else drawBloom(ctx, b);
 
     ctx.font = type.spec;
     if ('letterSpacing' in ctx) ctx.letterSpacing = type.ls + 'px';
@@ -374,20 +441,111 @@ async function boot() {
     });
   }
 
+  let running = false;
+  let lastT = 0;
+
   if (!(await measure())) return;   // leave the DOM paragraph exactly as it is
   src.insertAdjacentElement('afterend', canvas);
   root.classList.add('is-flowing');
   draw(0);
 
-  if (calm.matches) return; // static blot, laid out once — nothing to animate
+  // With motion off there is no frame loop to notice the sprite arriving, so
+  // redraw once when hero.js says it is ready.
+  window.addEventListener('garden:bloom', () => {
+    if (!running) draw(lastT);
+  });
+
+  /* ------------------------------------------------------ grab and throw */
+
+  let last = null;       // last pointer sample, for throw velocity
+  let grabDx = 0;
+  let grabDy = 0;
+
+  function local(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  function hit(e) {
+    const p = local(e);
+    const b = place(lastT);
+    return Math.hypot(p.x - b.x, p.y - b.y) <= b.r;
+  }
+
+  // Touch has to say up front that this gesture is the flower's and not a
+  // scroll — but only when it lands on the flower, so the rest of the
+  // paragraph still scrolls normally.
+  canvas.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    if (t && hit(t)) e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.button > 0 || !hit(e)) return;
+    const p = local(e);
+    const b = place(lastT);
+    grabDx = b.x - p.x;
+    grabDy = b.y - p.y;
+    held = true;
+    off.vx = off.vy = 0;
+    last = { x: p.x, y: p.y, t: e.timeStamp };
+    canvas.setPointerCapture(e.pointerId);
+    canvas.classList.add('is-held');
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!held) {
+      canvas.classList.toggle('can-grab', hit(e));
+      return;
+    }
+    const p = local(e);
+    const drift = bloom(lastT, colW, baseH, radius, pinned);
+    off.x = p.x + grabDx - drift.x;
+    off.y = p.y + grabDy - drift.y;
+    const dt = Math.max(1, e.timeStamp - last.t);
+    // Smoothed, so one jittery sample does not become the whole throw.
+    off.vx = off.vx * 0.6 + ((p.x - last.x) / dt) * 1000 * 0.4;
+    off.vy = off.vy * 0.6 + ((p.y - last.y) / dt) * 1000 * 0.4;
+    last = { x: p.x, y: p.y, t: e.timeStamp };
+    if (!running) draw(lastT);
+  });
+
+  function release(e) {
+    if (!held) return;
+    held = false;
+    canvas.classList.remove('is-held');
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) { /* gone */ }
+    // A pause before letting go is not a throw.
+    if (e.timeStamp - last.t > 90) off.vx = off.vy = 0;
+  }
+  canvas.addEventListener('pointerup', release);
+  canvas.addEventListener('pointercancel', release);
+  canvas.addEventListener('pointerleave', () => canvas.classList.remove('can-grab'));
+
+  // Underdamped spring (stiffness 40, damping 7): overshoots once or twice
+  // before settling, which is what makes it feel thrown rather than tweened.
+  function spring(dt) {
+    if (held || (!off.x && !off.y && !off.vx && !off.vy)) return;
+    const K = 40, C = 7;
+    off.vx += (-K * off.x - C * off.vx) * dt;
+    off.vy += (-K * off.y - C * off.vy) * dt;
+    off.x += off.vx * dt;
+    off.y += off.vy * dt;
+    if (Math.abs(off.x) + Math.abs(off.y) + Math.abs(off.vx) + Math.abs(off.vy) < 0.05) {
+      off.x = off.y = off.vx = off.vy = 0;
+    }
+  }
+
+  if (calm.matches) return; // no drift and no spring: a dragged bloom stays put
 
   /* ------------------------------------------------------------ frame loop */
 
   let raf = 0;
-  let running = false;
 
   function tick(now) {
     if (!running) return;
+    spring(Math.min(0.05, (now - lastT) / 1000 || 0.016));
+    lastT = now;
     draw(now);
     raf = requestAnimationFrame(tick);
   }
