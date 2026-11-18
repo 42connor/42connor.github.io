@@ -3,7 +3,7 @@
    in the corner turns it off for good (until pressed again). */
 const btn = document.getElementById('auto');
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const SPEED = 190;       // px per second
+const SPEED = 270;       // px per second
 const START = 6400;      // let the cursor make its first take first
 const RESUME = 3200;     // idle time before it takes over again
 
@@ -36,7 +36,7 @@ function tick(t) {
     const slow = [...document.querySelectorAll('[data-slow]')].some((el) => {
       const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0;
     });
-    const k = slow ? .7 : 1;
+    const k = slow ? .85 : 1;
     pos = Math.min(max(), pos + SPEED * k * Math.min(.05, (t - last) / 1000));
     scrollTo({ top: pos, behavior: 'instant' });   // instant: never a glide, whatever the css says
     if (pos >= max() - 1) { held = true; return; }          // the end: stay put
