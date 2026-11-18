@@ -1,0 +1,27 @@
+/* Shared by the six openings. --e is the opening's progress (0 at the top, 1 when the
+   Monet Shot window has arrived); anything added to the first screen leaves with the name. */
+.name h1 { font: inherit; letter-spacing: inherit; margin: 0; }
+.hx { transition: opacity .3s linear; opacity: calc(1 - var(--e, 0) * 2.6); }
+.stage[style*="--e: 0.9"] .hx, .stage[style*="--e: 1"] .hx { pointer-events: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .hx { opacity: 1; transform: none !important; } }
+
+/* 3 · The take: a Monet Shot cursor glides in, clicks the name, and the view zooms on the click */
+.hx-rec { position: absolute; inset: 0; pointer-events: none; }
+.hx-cursor {
+  position: absolute; left: 0; top: 0; z-index: 4;
+  transform: translate3d(var(--cx, 110vw), var(--cy, 80vh), 0) scale(var(--cs, 1));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .35));
+  transform-origin: 6px 3px;
+}
+.hx-ripple {
+  position: absolute; left: 0; top: 0; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .9); opacity: 0; z-index: 3;
+  transform: translate3d(var(--rx, 0), var(--ry, 0), 0) scale(.3);
+}
+.hx-ripple.is-on { animation: hx-ripple .7s cubic-bezier(.2, .7, .1, 1); }
+@keyframes hx-ripple { from { opacity: 1; transform: translate3d(var(--rx), var(--ry), 0) scale(.3); } to { opacity: 0; transform: translate3d(var(--rx), var(--ry), 0) scale(1.4); } }
+/* the zoom: painting and name scale together about the click */
+.canvas, .name { transition: scale 1.25s cubic-bezier(.65, 0, .25, 1); }
+html.hx-zoomed .canvas, html.hx-zoomed .name { scale: 1.32; }
+@media (prefers-reduced-motion: reduce) { .hx-rec { display: none; } }

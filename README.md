@@ -1,56 +1,65 @@
 # 42connor.github.io
 
-Personal CV site for Connor Hood — a single static page, no build step, no
-dependencies to install. Open `index.html` and it works.
+Connor Hood's site. The whole page is one painting (Van Gogh's *Almond Blossom* first) with
+his work floating on it in windows, the way Monet Shot frames a take. A Monet Shot cursor
+clicks the name and zooms; the first window rises from below; the painting crossfades
+section by section.
+
+- `index.html`, `style.css`, `main.js`: the page. `hero.css`, `hero.js`: the opening cursor take.
+- `sound.js`: the music ("Jaago" by Lifafa, `media/music.m4a`, cut to start at the drop and
+  loop the hard section), the dock button, and the StyleFeatures film that ducks it.
+- `autoscroll.js`: the page reads itself; any touch hands it back.
+- `cv.html` (with `site.css`, `nav.js`): the CV.
+- `v/` (not committed): the six design variants and six openings this came from.
+
+
+<!-- earlier notes -->
+# 42connor.github.io
+
+Personal site and CV for Connor Hood. Static, no build step: `index.html`,
+`site.css`, `site.js`, plus `cv.html` for the full printable CV.
+Serve it over http (the hands procession loads `ornaments/hands.json`):
+
+```sh
+python3 -m http.server 4820
+```
 
 **Live:** https://42connor.github.io
 
-## Layout
+## The idea
+
+A motion study. Muybridge's *Horse in Motion* (1878, Palo Alto) opens the page:
+its twelve shutters fire in order, then scrolling sets the whole card galloping.
+Everything historical is printed in one ink, the green of Connor's swallows
+engraving; colour arrives only on his own photos and film, which develop from
+ink to full colour as they reach the middle of the screen.
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The whole CV. Semantic sections, no framework. |
-| `style.css` | Parchment + gold light-mode design. Cormorant Garamond headings, JetBrains Mono body. Includes a print stylesheet that produces a clean one-page PDF. |
-| `hero.js` | Generative garden painted once with p5.brush — rose blooms, sage sprigs and gold sparkles over washes, watercolor bleeds and flow-field drift. Different on every load. On a phone, where there are no margins, it spreads behind the whole page instead of being skipped. |
-| `pretext.js` | The "In Practice" paragraph, laid out in userland with pretext so the prose re-flows around a drifting flower every frame. On a narrow column the flower pins to one edge so a phone gets the effect too. |
-| `fonts/` | Self-hosted variable woff2 subsets, so no cross-origin request blocks first paint. |
-| `img/` | Portrait at 1x/2x/3x in webp and jpg. |
-| `vendor/` | Third-party libraries, committed rather than installed. |
-| `tools/og-card.html` | Source for the social share card; see below. |
-| `tools/render-card.mjs` | Renders that card to `og-card.png`. Zero dependencies. |
+| `media/` | Connor's own photos and clips, cut and encoded for the web (H.264, muted, posters). iPhone HDR clips were tone-mapped to SDR with `avconvert` first. |
+| `ornaments/walk.webp` | The 12 Muybridge frames as one sprite, in green ink. |
+| `ornaments/plate-horse*.webp` | The whole 1878 card, untouched. |
+| `ornaments/hands/` | Sculpted hands from The Met Open Access (CC0), printed in ink. |
+| `ornaments/credits*.json` | Sources and licences (kept off the page). |
+| `og-card.jpg` | Share card (a render of the opening). |
 
-## Vendored libraries
+## Sound and motion
 
-Both are committed so the site has no install step and no CDN dependency.
+- **The bar** (`nav.js`) stays at the top the whole way down: dark over the films and paintings,
+  light on paper, the current section underlined, a hairline for how far you've come. On phones,
+  Menu opens a full page of links. The CV page has the same bar and footer.
+- **Music** (`media/music.m4a`, the song is "Jaago" by Lifafa; not Connor's) loops quietly behind the page. Browsers only allow sound
+  after a tap or key, so it starts on the visitor's first one; the Music button in the
+  corner switches it, and an "off" is remembered. Fades run through Web Audio, because
+  iPhones ignore a media element's volume.
+- **The templates film** plays silently as a picture. *Watch with sound* fades the music
+  out and plays the film from the start with its own sound; stopping it, letting it end,
+  or scrolling away fades the music back in.
+- **Autoscroll** (`autoscroll.js`, from socialacolyte.github.io) reads the page by itself
+  after the opening, slower through the scroll scenes, and hands control back the moment
+  the visitor scrolls. *Auto* in the corner turns it off.
+- **Homer's Sloop, Nassau** is painted as you scroll by the StyleFeatures `wet-on-wet`
+  piece, copied whole into `c/wet-on-wet/`.
 
-- **[p5.brush](https://github.com/acamposuribe/p5.brush)** v2.2.2 (MIT) — `vendor/brush.js`,
-  the standalone WebGL2 build, so p5.js is not needed.
-- **[pretext](https://github.com/chenglou/pretext)** v0.0.8 (MIT) — `vendor/pretext/`,
-  ESM, lazy-imported only when the section that uses it nears the viewport.
-
-## Progressive enhancement
-
-Neither effect is load-bearing. The painting is skipped without WebGL2, on
-metered or 2G connections, and on low-core devices, falling back to the CSS
-gradient in `.ambient`. The flowed paragraph stays ordinary DOM text — always
-present for selection, screen readers, ctrl+F and print — and the flower's size
-is capped so every line keeps a readable run at any column width. Both respect
-`prefers-reduced-motion`.
-
-## Regenerating the share card
-
-`og-card.png` is a 1200x630 render of `tools/og-card.html`. After changing the
-card, rebuild it with:
-
-```sh
-node tools/render-card.mjs
-```
-
-The script is self-contained — it starts its own static server and its own
-isolated headless Chrome, waits for the webfonts to load, shoots the card, and
-cleans up after itself. No dependencies to install, and it never touches your
-real browser profile. Set `CHROME=/path/to/chrome` if it cannot find a browser.
-
-Chrome's old `--screenshot` flag is not an option here: the headless mode it
-belonged to has been removed from current builds, so the script drives DevTools
-directly instead.
+Respects `prefers-reduced-motion` (finished states, nothing pinned) and prints
+`cv.html` as a clean PDF.

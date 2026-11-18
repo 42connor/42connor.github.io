@@ -1,220 +1,317 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connor Hood — CV</title>
-    <meta name="description" content="Connor Hood — AI Systems Engineer: agentic automation on live financial and scientific data, ML datasets and full stack development.">
-    <meta name="theme-color" content="#f5efe1">
-    <link rel="canonical" href="https://42connor.github.io/">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-
-    <!-- Shared on X and LinkedIn, so the card matters as much as the page. -->
-    <meta property="og:type" content="profile">
-    <meta property="og:site_name" content="Connor Hood">
-    <meta property="og:title" content="Connor Hood — AI Systems Engineer">
-    <meta property="og:description" content="Agentic AI systems on live financial and scientific data &mdash; a Claude&ndash;QuickBooks connector that runs a property portfolio&rsquo;s reporting and reconciliation, and an AI data pipeline for Global Footprint Network.">
-    <meta property="og:url" content="https://42connor.github.io/">
-    <meta property="og:image" content="https://42connor.github.io/og-card.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Connor Hood — AI Systems Engineer, Agentic Automation and ML Datasets">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:creator" content="@SocialAcolyte">
-    <meta name="twitter:title" content="Connor Hood — AI Systems Engineer">
-    <meta name="twitter:description" content="Agentic AI systems on live financial and scientific data &mdash; a Claude&ndash;QuickBooks connector that runs a property portfolio&rsquo;s reporting and reconciliation, and an AI data pipeline for Global Footprint Network.">
-    <meta name="twitter:image" content="https://42connor.github.io/og-card.png">
-
-    <!-- The italic face sets .note, which is above the fold; without this it
-         arrives after the roman and the intro line visibly swaps. -->
-    <link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Connor Hood</title>
+<meta name="description" content="Connor Hood, AI systems engineer, San Francisco. Monet Shot, StyleFeatures, MCP servers, Common Ground.">
+<meta name="theme-color" content="#2c3a3a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://42connor.github.io/">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Connor Hood">
+<meta property="og:description" content="AI systems engineer, San Francisco. Monet Shot, StyleFeatures, MCP servers, Common Ground.">
+<meta property="og:url" content="https://42connor.github.io/">
+<meta property="og:image" content="https://42connor.github.io/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@SocialAcolyte">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="ornaments/paint/van-gogh-almond-blossom.webp">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="hero.css">
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body id="top">
-    <div class="ambient" aria-hidden="true"></div>
-    <div id="paint" aria-hidden="true"></div>
-    <main>
-        <header class="masthead">
-            <picture>
-                <source type="image/webp"
-                        srcset="img/profile-130.webp 1x, img/profile-260.webp 2x, img/profile-390.webp 3x">
-                <img src="img/profile-260.jpg"
-                     srcset="img/profile-130.jpg 1x, img/profile-260.jpg 2x, img/profile-390.jpg 3x"
-                     alt="Connor Hood" class="portrait"
-                     width="130" height="130"
-                     fetchpriority="high" decoding="async">
-            </picture>
-            <div class="ident">
-                <h1>Connor Hood</h1>
-                <p class="title">AI Systems Engineer &middot; Agentic Automation &middot; ML Datasets</p>
-                <ul class="contact">
-                    <li><a href="mailto:42connor@gmail.com">42connor@gmail.com</a></li>
-                    <li><a href="https://www.linkedin.com/in/connor-m-hood/" target="_blank" rel="noopener">linkedin.com/in/connor-m-hood</a></li>
-                    <li><a href="https://x.com/SocialAcolyte" target="_blank" rel="noopener">x.com/SocialAcolyte</a></li>
-                    <li><a href="https://github.com/42connor" target="_blank" rel="noopener">github.com/42connor</a></li>
-                </ul>
-            </div>
-        </header>
+<body>
 
-        <hr>
+<!-- The painting: one canvas behind everything, crossfading section by section -->
+<div class="canvas" aria-hidden="true">
+  <div class="paint is-on" data-src="ornaments/paint/van-gogh-almond-blossom.webp" style="background-image:url(ornaments/paint/van-gogh-almond-blossom.webp)"></div>
+  <div class="paint" data-src="ornaments/paint/monet-water-lilies.webp"></div>
+  <div class="paint" data-src="ornaments/paint/van-gogh-starry-night.webp"></div>
+  <div class="paint" data-src="ornaments/paint/hokusai-great-wave.webp"></div>
+  <div class="paint" data-src="ornaments/paint/monet-poppy-field.webp"></div>
+  <div class="paint" data-src="ornaments/paint/turner-san-giorgio-sunset.webp"></div>
+  <div class="shade"></div>
+</div>
+<p class="credit" aria-hidden="true"><span class="credit-text">Vincent van Gogh, Almond Blossom</span></p>
 
-        <section>
-            <h2>Objective</h2>
-            <p class="note">
-                Building <strong>agentic AI systems</strong> that do real work on live data &mdash;
-                <strong>financial operations</strong>, <strong>scientific datasets</strong> and, next,
-                <strong>robotics</strong> &mdash; with the production-floor habit of making every result
-                repeatable and checkable.
-            </p>
-        </section>
+<header class="nav">
+  <a class="nav-name" href="#top">Connor Hood</a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#work">Work</a>
+    <a href="#evolve">Evolve</a>
+    <a href="#systems">Systems</a>
+    <a href="#studio">Studio</a>
+    <a href="#more">More</a>
+  </nav>
+  <div class="nav-end">
+    <a href="cv.html">CV</a>
+    <a href="mailto:42connor@gmail.com">Email</a>
+  </div>
+  <button class="nav-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+</header>
 
-        <hr>
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Menu">
+    <a href="#work">Work</a>
+    <a href="#evolve">Evolve</a>
+    <a href="#systems">Systems</a>
+    <a href="#studio">Studio</a>
+    <a href="#more">More</a>
+    <a href="cv.html">CV</a>
+    <a href="mailto:42connor@gmail.com">Email</a>
+  </nav>
+</div>
 
-        <section id="flow" class="flow">
-            <h2>In Practice</h2>
-            <p class="flow-source">
-                I build the systems that sit between messy real-world data and the models that have to
-                work inside it &mdash; a connector that lets Claude read, reconcile and write the books of
-                a whole property portfolio, a pipeline that turns tens of millions of rows of world
-                agricultural data into national footprint accounts, and datasets that teach a machine to
-                read hands moving. The production floor taught me what tolerance and repeatability
-                actually mean, and the rule carries over: an AI system has to be right about the world,
-                not just fluent about it.
-            </p>
-            <!-- Only shown once pretext has actually taken the layout over, so the
-                 claim stays true in the fallback case. -->
-            <p class="flow-note">
-                Every line above was measured and placed in JavaScript, then re-flowed around the
-                drifting shape once per frame &mdash; your browser never laid this paragraph out.
-                Grab the flower and throw it.
-                Built with <a href="https://github.com/chenglou/pretext" target="_blank" rel="noopener">pretext</a>.
-            </p>
-        </section>
+<main>
 
-        <hr>
+<!-- 1. Almond Blossom. A Monet Shot cursor clicks the name and zooms; the first window rises from below -->
+<section class="open" id="top" data-paint="0" data-slow>
+  <div class="stage">
+    <h1 class="name">Connor <span class="hx-target">Hood</span> <span class="role">AI systems engineer, San Francisco</span></h1>
+    <div class="hx hx-rec" aria-hidden="true">
+      <svg class="hx-cursor" viewBox="0 0 28 28" width="30" height="30"><path d="M6 3.5v19.2l4.9-4.6 3.1 7.1 3.4-1.5-3.1-6.9h6.6z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <i class="hx-ripple"></i>
+    </div>
+    <figure class="piece piece-hero">
+      <div class="rise">
+        <div class="win win-hero">
+          <img src="ornaments/monetshot-window.webp" width="1800" height="1125" alt="A Monet Shot recording: the StyleFeatures collection page">
+        </div>
+      </div>
+      <figcaption class="label">
+        <p class="l-head"><b>Monet Shot</b><span>2026</span><span>macOS app</span></p>
+        <p class="l-line">A screen recorder that zooms on your clicks and frames every take on a painting.</p>
+        <p class="l-links"><a href="https://monetshot.pages.dev/">Site</a><a href="https://github.com/SocialAcolyte/monet-shot">GitHub</a><button class="copy" type="button" data-copy="brew install --cask monet-shot"><code>brew install --cask monet-shot</code></button></p>
+      </figcaption>
+    </figure>
+  </div>
+  <i class="anchor" id="work"></i>
+</section>
 
-        <section>
-            <h2>AI Systems Engineering</h2>
-            <h3>PIP Inc. / SFRent, San Francisco <span class="role">AI Systems Engineer (contract)</span> <span class="year">2026&ndash;present</span></h3>
-            <ul>
-                <li>Designed and built the <strong>QB Report Generator</strong>, an MCP server giving Claude live, governed access to QuickBooks Enterprise across 85+ company files behind a 36-building residential portfolio.</li>
-                <li>Report engine producing 20+ recurring house-format accounting reports (P&amp;L roll-ups, rent rolls, AR, cash, utilities, fixed assets) as PDF and Excel, validated against the accounting team&rsquo;s own workbooks. One monthly report went from ~2 hours by hand to ~10 minutes and now runs on a schedule; the manual version was retired.</li>
-                <li>AI bank reconciliation that writes back only when an account ties to zero &mdash; in one monthly run, 110 accounts processed and 44 reconciled and recorded in about 90 minutes.</li>
-                <li>Governed write tools for payments, deposits, bills and journal entries: per-user approval codes, preview, full audit log and one-step undo. Used by the accounting team in San Francisco and India.</li>
-                <li>Audit tooling that traces any figure back to its source transactions and flags edits to closed accounting periods across the portfolio for management review.</li>
-                <li>Shipped features to the company&rsquo;s Rails property-management platform: a QuickBooks reports console in production, emergency SMS alerts to resident managers, and sync endpoints between the platform and QuickBooks.</li>
-                <li>Onboarded and trained 10+ staff, from accounting through senior finance leadership, onto Claude and the connector.</li>
-            </ul>
-            <h3>Global Footprint Network <span class="role">AI Data Pipeline Engineer &middot; NFBA 2027 pilot</span> <span class="year">2026</span></h3>
-            <ul>
-                <li>Built an AI-assisted ingestion and QA pipeline for the FAOSTAT inputs to the National Footprint and Biocapacity Accounts, loading ~31M rows (~42M across raw, intermediate and final layers) into GFN&rsquo;s research database.</li>
-                <li>Found and fixed country-reconciliation errors in the legacy processing code affecting ~5,000 rows, and flagged anomalous trade-data values for the science team.</li>
-                <li>Handed over the code and a documented decision log for future annual production runs.</li>
-            </ul>
-        </section>
+<!-- 2. Water Lilies. StyleFeatures: the film is a window -->
+<section class="part part-sf" id="stylefeatures" data-paint="1">
+  <div class="piece piece-film reveal">
+    <section class="film">
+      <div class="win win-film">
+        <video class="film-video" src="media/templates.mp4" poster="media/templates.jpg" muted loop playsinline preload="none"></video>
+      </div>
+      <div class="film-row">
+        <div class="label">
+          <p class="l-head"><b>StyleFeatures</b><span>2026</span><span>Web components</span></p>
+          <p class="l-line">88 living pieces drawn from paintings, plates, water, cloth and stone; 28 sites built from them.</p>
+          <p class="l-links"><a href="https://socialacolyte.github.io/stylefeatures/">Site</a><a href="https://github.com/SocialAcolyte/stylefeatures">GitHub</a></p>
+        </div>
+        <button class="film-play" type="button" aria-pressed="false"><span class="film-label">Watch with sound</span></button>
+      </div>
+    </section>
+  </div>
 
-        <hr>
+  <div class="pond" data-slow>
+    <figure class="pad reveal" style="--x:4%;--y:4%;--w:24%;--d:.10"><div class="win"><img src="ornaments/sf/koi-pond.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Koi pond</figcaption></figure>
+    <figure class="pad reveal" style="--x:36%;--y:0%;--w:18%;--d:-.06"><div class="win"><img src="ornaments/sf/lotus-leaf.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Lotus leaf</figcaption></figure>
+    <figure class="pad reveal" style="--x:64%;--y:10%;--w:30%;--d:.14"><div class="win"><img src="ornaments/sf/waterfall-print.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Waterfall print</figcaption></figure>
+    <figure class="pad reveal" style="--x:14%;--y:40%;--w:20%;--d:-.10"><div class="win"><img src="ornaments/sf/kintsugi.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Kintsugi</figcaption></figure>
+    <figure class="pad reveal" style="--x:42%;--y:34%;--w:26%;--d:.04"><div class="win"><img src="ornaments/sf/reedbed.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Reedbed</figcaption></figure>
+    <figure class="pad reveal" style="--x:74%;--y:52%;--w:20%;--d:-.12"><div class="win"><img src="ornaments/sf/woodblock-print.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Woodblock print</figcaption></figure>
+    <figure class="pad reveal" style="--x:6%;--y:74%;--w:22%;--d:.12"><div class="win"><img src="ornaments/sf/gold-ground.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Gold ground</figcaption></figure>
+    <figure class="pad reveal" style="--x:40%;--y:72%;--w:24%;--d:-.04"><div class="win"><img src="ornaments/sf/marbling.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Marbling</figcaption></figure>
+  </div>
+</section>
 
-        <section>
-            <h2>ML Datasets &amp; Software</h2>
-            <ul>
-                <li>Personal work on large-scale ML datasets, including web-scraping and curating sets across varied numerical base systems, and language/action datasets (synchronous ASL hand-data video).</li>
-                <li>Post-training data collection system operation and management (mocap).</li>
-                <li>VLA (vision-language-action) model improvements with a focus on &lsquo;lossy&rsquo; compound model behavior to improve performance for general robotics models.</li>
-                <li>AI Minecraft bot development for physicalised &lsquo;agent&rsquo; deployment in video games using the Mindcraft library.</li>
-                <li>Extensive web development with React and Tailwind.</li>
-                <li>Implemented a fork of MetaMask to optimise co-sig functionality and OpenClaw integration; prior UX/UI work in the wallet space.</li>
-                <li>AI-native development of landing/hero pages, backend database logic, query handling, concurrent operations and triage logic, and algorithm design.</li>
-            </ul>
-        </section>
+<!-- 3. The Starry Night. Evolve -->
+<section class="part part-evolve" id="evolve" data-paint="2">
+  <h2 class="sec reveal">Evolve</h2>
+  <figure class="piece piece-wide reveal">
+    <div class="win">
+      <picture>
+        <source type="image/webp" srcset="media/evolve-720.webp 720w, media/evolve-1200.webp 1200w, media/evolve-1920.webp 1920w" sizes="(max-width: 960px) 100vw, 84vw">
+        <img src="media/evolve-1200.jpg" width="1200" height="675" loading="lazy" alt="Connor and his teammate holding Evolve second-place certificates with Chamath Palihapitiya, under a screen reading Second place goes to Common Ground">
+      </picture>
+    </div>
+    <figcaption class="label"><p class="l-head"><b>Second place</b><span>Evolve, 8090, November 2026</span></p></figcaption>
+  </figure>
 
-        <hr>
+  <div class="pair">
+    <figure class="piece piece-pitch reveal">
+      <div class="win">
+        <picture>
+          <source type="image/webp" srcset="media/pitch-720.webp 720w, media/pitch-1200.webp 1200w, media/pitch-1790.webp 1790w" sizes="(max-width: 960px) 100vw, 54vw">
+          <img src="media/pitch-1200.jpg" width="1200" height="674" loading="lazy" alt="Connor presenting Common Ground at 8090">
+        </picture>
+      </div>
+      <figcaption class="label"><p class="l-head"><span>Presenting Common Ground, 8090</span></p></figcaption>
+    </figure>
+    <figure class="piece piece-cg reveal">
+      <div class="win"><img src="media/rows/common-ground.webp" width="960" height="720" loading="lazy" alt="The Common Ground site"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>Common Ground</b><span>2026</span><span>Evolve hackathon, 8090</span></p>
+        <p class="l-line">Second place. A software factory for venture portfolios.</p>
+        <p class="l-links"><a href="https://common-ground-theta.vercel.app/">Site</a><a href="https://github.com/SocialAcolyte/8090-project-Anushka-Connor">GitHub</a></p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
 
-        <section>
-            <h2>Science &amp; Technology Education</h2>
-            <ul>
-                <li><em>Space Flight News</em> &mdash; voice actor and co-founder, showcasing a passion for science, technology, and tech-focused education.</li>
-                <li>Guest speaker and lecturer &mdash; psychology (2023) and technology &amp; AI (2024) at the Venturer retreat.</li>
-            </ul>
-        </section>
+<!-- 4. The Great Wave. Systems -->
+<section class="part part-systems" id="systems" data-paint="3">
+  <h2 class="sec reveal">Systems</h2>
+  <div class="pair pair-sys">
+    <figure class="piece piece-mcp reveal">
+      <div class="win"><img src="media/rows/mcp.webp" width="960" height="720" loading="lazy" alt="An MCP server's site"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>MCP servers</b><span>2025–</span><span>Dozens built</span></p>
+        <p class="l-line">The largest runs QuickBooks Enterprise across 85+ company files for a 36-building property portfolio.</p>
+        <p class="l-links"><a href="https://github.com/SocialAcolyte">GitHub</a></p>
+      </figcaption>
+    </figure>
+    <figure class="piece piece-gfn reveal">
+      <div class="win"><img src="media/rows/gfn.webp" width="960" height="720" loading="lazy" alt="Global Footprint Network"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>NFBA 2027 pilot</b><span>2026</span><span>Global Footprint Network</span></p>
+        <p class="l-line">A pipeline that loaded and checked ~31M rows of FAOSTAT data for the national footprint accounts.</p>
+        <p class="l-links"><a href="https://www.footprintnetwork.org/">Site</a></p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
 
-        <hr>
+<!-- 5. Poppy Field. The studio -->
+<section class="part part-studio" id="studio" data-paint="4">
+  <h2 class="sec reveal">Studio</h2>
+  <figure class="piece piece-clips">
+    <div class="clips">
+      <div class="win clip reveal" style="--o:0"><video data-auto src="media/studio-rig.mp4" poster="media/studio-rig.jpg" muted loop playsinline preload="none" aria-label="The capture rig"></video></div>
+      <div class="win clip reveal" style="--o:1"><video data-auto src="media/studio-ceiling.mp4" poster="media/studio-ceiling.jpg" muted loop playsinline preload="none" aria-label="Cameras on the ceiling"></video></div>
+      <div class="win clip reveal" style="--o:2"><video data-auto src="media/studio-team.mp4" poster="media/studio-team.jpg" muted loop playsinline preload="none" aria-label="The team at work"></video></div>
+      <div class="win clip reveal" style="--o:3"><video data-auto src="media/avatar.mp4" poster="media/avatar.jpg" muted loop playsinline preload="none" aria-label="A captured body on screen"></video></div>
+    </div>
+    <figcaption class="label">
+      <p class="l-head"><b>Motion capture</b><span>2026</span><span>Frontier Tower AI floor</span></p>
+      <p class="l-line">The capture rig and a humanoid training-data pipeline (FreeMoCap, MuJoCo).</p>
+      <p class="l-links"><a href="https://frontiertower.io/">Frontier Tower</a></p>
+    </figcaption>
+  </figure>
+  <figure class="piece piece-hand reveal">
+    <div class="win clip"><video data-auto src="media/hand-model.mp4" poster="media/hand-model.jpg" muted loop playsinline preload="none" aria-label="A hand-model capture on screen"></video></div>
+    <figcaption class="label">
+      <p class="l-head"><b>Hand data</b><span>Ongoing</span><span>ML datasets</span></p>
+      <p class="l-line">Synchronous ASL hand-motion video for training.</p>
+    </figcaption>
+  </figure>
+</section>
 
-        <section>
-            <h2>Production, Manufacturing &amp; Logistics <span class="role">Various sectors</span></h2>
-            <p class="note">Extensive experience in production, manufacturing, and warehouse work across key sectors.</p>
-            <ul>
-                <li><strong>Biomedical</strong> &mdash; Thermo Fisher Scientific <span class="year">Mar–Oct</span></li>
-                <li><strong>Food &amp; Beverage</strong> &mdash; Coopers Brewery <span class="year">2022–2024</span>, Haigh&rsquo;s Chocolates <span class="year">2024</span>, Senector <span class="year">2023</span></li>
-                <li><strong>Construction Supplies</strong> &mdash; BlueScope Steel <span class="year">2021–2022</span></li>
-            </ul>
-        </section>
+<!-- 6. Turner. More, then the footer on a dark scrim -->
+<section class="part part-more" id="more" data-paint="5">
+  <h2 class="sec reveal">More</h2>
+  <div class="trio">
+    <figure class="piece reveal">
+      <div class="win"><img src="media/rows/webpaper.webp" width="960" height="720" loading="lazy" alt="webpaper"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>webpaper</b><span>2025</span><span>Chrome extension</span></p>
+        <p class="l-links"><a href="https://socialacolyte.github.io/webpaper.html">Site</a></p>
+      </figcaption>
+    </figure>
+    <figure class="piece reveal">
+      <div class="win"><img src="media/rows/thesis.webp" width="960" height="720" loading="lazy" alt="The data-layer thesis"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>Data-layer thesis</b><span>2024</span><span>Essay</span></p>
+        <p class="l-links"><a href="https://socialacolyte.github.io/buisness%20strategy.pdf">Read</a></p>
+      </figcaption>
+    </figure>
+    <figure class="piece reveal">
+      <div class="win"><img src="media/rows/spaceflight-news.webp" width="960" height="720" loading="lazy" alt="Spaceflight News"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>Spaceflight News</b><span>Weekly</span><span>Co-founder, co-host, voice</span></p>
+        <p class="l-links"><a href="https://www.youtube.com/@spaceflight_news">YouTube</a><a href="https://www.instagram.com/spaceflight_news/">Instagram</a></p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
 
-        <hr>
+</main>
 
-        <section>
-            <h2>Education</h2>
-            <ul>
-                <li><strong>Flinders University</strong> &mdash; University preparatory program <span class="year">2023</span></li>
-                <li><strong>Open Access College</strong> &mdash; High school graduation certificate <span class="year">2022</span></li>
-            </ul>
-        </section>
+<footer class="foot" id="contact" data-paint="5">
+  <div class="foot-in">
+    <div class="foot-me reveal">
+      <div class="win win-me"><img src="img/profile-260.webp" srcset="img/profile-130.webp 130w, img/profile-260.webp 260w, img/profile-390.webp 390w" sizes="120px" width="260" height="260" loading="lazy" alt="Connor Hood, as a mosaic"></div>
+      <div>
+        <p class="foot-name">Connor Hood</p>
+        <p class="foot-role">AI systems engineer, San Francisco. From Adelaide.</p>
+        <a class="foot-mail" href="mailto:42connor@gmail.com">42connor@gmail.com</a>
+      </div>
+    </div>
 
-        <hr>
+    <div class="foot-earlier">
+      <div>
+        <h3>Production floor</h3>
+        <ul>
+          <li>Thermo Fisher Scientific</li>
+          <li>Haigh's Chocolates <span>2024</span></li>
+          <li>Senector <span>2023</span></li>
+          <li>Coopers Brewery <span>2022–24</span></li>
+          <li>BlueScope Steel <span>2021–22</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Scouts and awards</h3>
+        <ul>
+          <li>Scouts SA Special Service Award <span>2025</span></li>
+          <li>National Volunteer Week <span>2024</span></li>
+          <li>Rotary Youth Leadership Award <span>2023</span></li>
+          <li>Queen Scout Award <span>2022</span></li>
+        </ul>
+      </div>
+    </div>
 
-        <section>
-            <h2>Volunteering &amp; Awards</h2>
-            <h3>Scouts SA <span class="role">Volunteer</span> <span class="year">2022–2025</span></h3>
-            <ul>
-                <li>Queen Scout Award <span class="year">2022</span></li>
-                <li>Special Service Award <span class="year">2025</span></li>
-                <li>Certificate III in Business <span class="year">2025</span></li>
-                <li>Certificate III in Active Volunteering <span class="year">2023</span></li>
-            </ul>
-            <h3>Other Notable Awards</h3>
-            <ul>
-                <li>Rotary Youth Leadership Awards (RYLA) <span class="year">2023</span></li>
-                <li>National Volunteer Week recognition <span class="year">2024</span></li>
-            </ul>
-        </section>
+    <div class="foot-cols">
+      <div>
+        <h3>Work</h3>
+        <ul>
+          <li><a href="https://monetshot.pages.dev/">Monet Shot</a></li>
+          <li><a href="https://socialacolyte.github.io/stylefeatures/">StyleFeatures</a></li>
+          <li><a href="https://common-ground-theta.vercel.app/">Common Ground</a></li>
+          <li><a href="https://github.com/SocialAcolyte">MCP servers</a></li>
+          <li><a href="https://www.footprintnetwork.org/">NFBA 2027 pilot</a></li>
+          <li><a href="https://frontiertower.io/">Motion capture</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Elsewhere</h3>
+        <ul>
+          <li><a href="mailto:42connor@gmail.com">Email</a></li>
+          <li><a href="https://www.linkedin.com/in/connor-m-hood/">LinkedIn</a></li>
+          <li><a href="https://github.com/42connor">GitHub</a></li>
+          <li><a href="https://github.com/SocialAcolyte">GitHub (projects)</a></li>
+          <li><a href="https://x.com/SocialAcolyte">X</a></li>
+          <li><a href="https://socialacolyte.github.io/">socialacolyte.github.io</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>This site</h3>
+        <ul>
+          <li><a href="cv.html">CV</a></li>
+          <li>San Francisco <time class="sf-time">--:--</time></li>
+          <li><button data-music type="button">Play the music</button></li>
+          <li><a href="#top" class="to-top">Back to top</a></li>
+        </ul>
+      </div>
+    </div>
 
-        <hr>
+    <p class="credits">© 2026 Connor Hood · Music: “Jaago” by Lifafa · Paintings public domain: Vincent van Gogh, <i>Almond Blossom</i>; Claude Monet, <i>Water Lilies</i>, <i>Poppy Field</i>; Vincent van Gogh, <i>The Starry Night</i>; Katsushika Hokusai, <i>The Great Wave off Kanagawa</i>; J. M. W. Turner, <i>San Giorgio, sunset</i></p>
+  </div>
+</footer>
 
-        <footer>
-            <!-- The repaint control stays hidden until hero.js has actually got a
-                 painting on screen, so it is never offered where it would do
-                 nothing. The separator lives inside the wrapper to avoid a
-                 dangling middot. -->
-            <p><a href="#top">cd ..</a> &middot; <button type="button" id="print" class="shell">print cv</button><span id="repaint-wrap" hidden> &middot; <button type="button" id="repaint" class="shell">repaint</button></span> &middot; &copy; 2026 Connor Hood</p>
-        </footer>
-    </main>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Connor Hood",
-        "url": "https://42connor.github.io/",
-        "image": "https://42connor.github.io/img/profile-390.jpg",
-        "email": "mailto:42connor@gmail.com",
-        "jobTitle": "AI Systems Engineer",
-        "sameAs": [
-            "https://github.com/42connor",
-            "https://www.linkedin.com/in/connor-m-hood/",
-            "https://x.com/SocialAcolyte"
-        ]
-    }
-    </script>
-    <script src="hero.js" defer></script>
-    <script type="module" src="pretext.js"></script>
-    <script>
-        /* The print stylesheet already produces a clean one-page CV, so this is
-           the whole feature. */
-        document.getElementById('print').addEventListener('click', function () {
-            window.print();
-        });
-    </script>
+<div class="dock">
+  <button id="auto" type="button" aria-pressed="true" aria-label="Autoscroll">Auto <i></i></button>
+  <button class="sound" type="button" aria-pressed="false" aria-label="Music"><span class="sound-label">Music</span> <span class="bars"><i></i><i></i><i></i><i></i></span></button>
+</div>
+
+<script type="module" src="sound.js"></script>
+<script type="module" src="autoscroll.js"></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="hero.js"></script>
 </body>
 </html>

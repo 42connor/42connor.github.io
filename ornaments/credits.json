@@ -1,0 +1,49 @@
+[
+ {
+  "file": "ornaments/walk.webp",
+  "title": "File:The Horse in Motion high res.jpg",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Horse_in_Motion_high_res.jpg",
+  "author": "Eadweard Muybridge, 1878",
+  "license": "Public domain"
+ },
+ {
+  "file": "ornaments/paint/*",
+  "source": "Monet Shot's bundled backdrops (monetshot-site/img/paint)",
+  "license": "Public domain paintings"
+ },
+ {
+  "file": "ornaments/sf/*, ornaments/monetshot-window.webp",
+  "source": "Connor's own StyleFeatures and Monet Shot sites",
+  "license": "Own work"
+ },
+ {
+  "file": "c/wet-on-wet/*",
+  "source": "Connor's StyleFeatures wet-on-wet piece; Winslow Homer, Sloop, Nassau (1899)",
+  "license": "Code: own work. Painting: public domain"
+ },
+ {
+  "file": "media/music.m4a",
+  "source": "Official upload on the artist's YouTube channel (LIFAFA, https://www.youtube.com/watch?v=aenAS53Wg8I), full track trimmed of silence, faded in/out for the loop",
+  "license": "Not licensed for the site: ask Lifafa before publishing",
+  "title": "Jaago",
+  "artist": "Lifafa (Suryakant Sawhney), from the album Jaago (2019)",
+  "official": "https://lifafa.bandcamp.com/track/jaago",
+  "cut": "2:26.0–3:41.9 of the official track (the drop lands 3.4s in, at 2:29.4); loops that section"
+ },
+ {
+  "file": "img/pfp.webp",
+  "source": "Connor's mosaic avatar from socialacolyte.github.io",
+  "license": "Own work"
+ },
+ {
+  "note": "Paintings added for the variant-2 openings, copied from ~/Developer/monetshot-site/img/paint (public domain; see that site's credits)",
+  "files": [
+   "ornaments/paint/turner-temeraire.webp",
+   "ornaments/paint/van-gogh-starry-night-rhone.webp",
+   "ornaments/paint/van-gogh-almond-blossom.webp",
+   "ornaments/paint/sargent-venice.webp",
+   "ornaments/paint/klimt-beech-grove.webp",
+   "ornaments/paint/monet-parliament-sunset.webp"
+  ]
+ }
+]

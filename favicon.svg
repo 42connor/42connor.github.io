@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Connor Hood">
-  <rect width="64" height="64" rx="14" fill="#f5efe1"/>
-  <g transform="translate(32 32) scale(1.24)">
-    <g fill="#869176" opacity=".7">
-      <path transform="rotate(133)" d="M0 0C6-4 6-17 0-21C-6-17-6-4 0 0Z"/>
-      <path transform="rotate(-133)" d="M0 0C6-4 6-17 0-21C-6-17-6-4 0 0Z"/>
-    </g>
-    <g fill="#e2b0b3"><path transform="rotate(0)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(45)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(90)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(135)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(180)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(225)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(270)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/><path transform="rotate(315)" d="M0 0C6.6-3.2 6.6-15.5 0-19C-6.6-15.5-6.6-3.2 0 0Z"/></g>
-    <g fill="#c2707a"><path transform="rotate(25.7)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(77.1)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(128.5)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(179.9)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(231.3)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(282.7)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/><path transform="rotate(334.1)" d="M0 0C4.4-2 4.4-9.8 0-12C-4.4-9.8-4.4-2 0 0Z"/></g>
-    <circle r="5.4" fill="#a87a2b"/>
-    <circle r="2.2" fill="#c9a55b"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#f4efdf"/><text x="32" y="45" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="40" fill="#26402f">ch</text></svg>
