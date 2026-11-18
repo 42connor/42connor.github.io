@@ -9,6 +9,10 @@ const $ = (s, r = document) => r.querySelector(s);
 const route = $('.route');
 const svg = $('.route-svg');
 const inkA = $('.ink-a'), inkB = $('.ink-b');
+// a darker, wider copy under each line keeps it legible on light paintings (cheaper than a blur filter)
+const shadeA = inkA.cloneNode(), shadeB = inkB.cloneNode();
+shadeA.setAttribute('class', 'ink-shade'); shadeB.setAttribute('class', 'ink-shade');
+inkA.before(shadeA); inkB.before(shadeB);
 const dotsG = $('.sea-dots'), ringsG = $('.rings'), gapsG = $('.gaps'), gapAll = $('.gap-all');
 const pen = $('.pen');
 const marks = Object.fromEntries([...document.querySelectorAll('.mark')].map((m) => [m.dataset.mark, m]));
@@ -100,30 +104,47 @@ function layout() {
   const iB = segs.findIndex((s, k) => k > iF && !s.flight);
   inkA.setAttribute('d', toD(segs.slice(0, iF)));
   inkB.setAttribute('d', toD(segs.slice(iB)));
-  // a throwaway path for the flight, to measure and to place the dots along
-  const fl = document.createElementNS(NS, 'path');
-  fl.setAttribute('d', toD(segs.slice(iF, iB))); svg.appendChild(fl);
-  lenA = inkA.getTotalLength(); lenF = fl.getTotalLength();
-  const lenB = inkB.getTotalLength();
+  shadeA.setAttribute('d', inkA.getAttribute('d'));
+  shadeB.setAttribute('d', inkB.getAttribute('d'));
+  // Sample the curves directly (cubic maths, not the browser's getPointAtLength, which walks
+  // the whole path on every call and took ~0.45 s here). Each part's sampled length is scaled
+  // to the browser's own total, so the dashes that draw the line still meet the samples exactly.
+  const walk = (list) => {
+    const pts = [{ x: list[0].p1.x, y: list[0].p1.y, l: 0 }];
+    let L = 0;
+    for (const s of list) {
+      const n = Math.max(6, Math.ceil(Math.hypot(s.p2.x - s.p1.x, s.p2.y - s.p1.y) / 5));
+      let px = s.p1.x, py = s.p1.y;
+      for (let i = 1; i <= n; i++) {
+        const t = i / n, u = 1 - t, a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+        const x = a * s.p1.x + b * s.c1.x + c * s.c2.x + d * s.p2.x, y = a * s.p1.y + b * s.c1.y + c * s.c2.y + d * s.p2.y;
+        L += Math.hypot(x - px, y - py); px = x; py = y;
+        pts.push({ x, y, l: L });
+      }
+    }
+    return { pts, L };
+  };
+  const wa = walk(segs.slice(0, iF)), wf = walk(segs.slice(iF, iB)), wb = walk(segs.slice(iB));
+  lenA = inkA.getTotalLength(); const lenB = inkB.getTotalLength();
+  lenF = wf.L;
   total = lenA + lenF + lenB;
-
-  // samples along the whole route (for the draw head, and to find where each point falls)
   samples = [];
-  const STEP = 6;
-  const push = (path, L, off) => { for (let l = 0; l <= L; l += STEP) { const p = path.getPointAtLength(l); samples.push({ l: off + l, x: p.x, y: p.y }); } };
-  push(inkA, lenA, 0); push(fl, lenF, lenA); push(inkB, lenB, lenA + lenF);
+  const keep = (w, L, off) => { const k = w.L ? L / w.L : 1; for (const q of w.pts) samples.push({ l: off + q.l * k, x: q.x, y: q.y }); };
+  keep(wa, lenA, 0); keep(wf, lenF, lenA); keep(wb, lenB, lenA + lenF);
   let m = -Infinity; samples.forEach((s) => { m = Math.max(m, s.y); s.my = m; });
   const lenAt = (p) => { let best = 0, d = Infinity; for (const s of samples) { const k = (s.x - p.x) ** 2 + (s.y - p.y) ** 2; if (k < d) { d = k; best = s.l; } } return best; };
 
-  // the dotted crossing
+  // the dotted crossing, spaced evenly along the flight
   dotsG.replaceChildren(); dots = [];
   const GAP = small ? 9 : 11;
+  let j = 0;
   for (let l = GAP; l < lenF - GAP / 2; l += GAP) {
-    const p = fl.getPointAtLength(l), c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', f(p.x)); c.setAttribute('cy', f(p.y)); c.setAttribute('r', '1.25');
+    while (j < wf.pts.length - 2 && wf.pts[j + 1].l < l) j++;
+    const q0 = wf.pts[j], q1 = wf.pts[j + 1], t = (l - q0.l) / ((q1.l - q0.l) || 1);
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', f(q0.x + (q1.x - q0.x) * t)); c.setAttribute('cy', f(q0.y + (q1.y - q0.y) * t)); c.setAttribute('r', '1.25');
     dotsG.appendChild(c); dots.push({ c, l: lenA + l });
   }
-  fl.remove();
   birds.style.width = ''; birds.dataset.f0 = lenA; birds.dataset.f1 = lenA + lenF;
 
   // rings at the places, and the marks beside them
@@ -179,8 +200,8 @@ function pointAt(l) {
 function paint() {
   const a = clamp(drawn, 0, lenA), b = clamp(drawn - lenA - lenF, 0, Infinity);
   const lenB = total - lenA - lenF;
-  inkA.style.strokeDasharray = `${lenA} ${lenA + 10}`; inkA.style.strokeDashoffset = `${lenA - a}`;
-  inkB.style.strokeDasharray = `${lenB} ${lenB + 10}`; inkB.style.strokeDashoffset = `${lenB - b}`;
+  for (const el of [inkA, shadeA]) { el.style.strokeDasharray = `${lenA} ${lenA + 10}`; el.style.strokeDashoffset = `${lenA - a}`; }
+  for (const el of [inkB, shadeB]) { el.style.strokeDasharray = `${lenB} ${lenB + 10}`; el.style.strokeDashoffset = `${lenB - b}`; }
   for (const d of dots) d.c.classList.toggle('on', d.l <= drawn);
   for (const r of ringAt) r.el.classList.toggle('on', r.l <= drawn + 2);
   const p = pointAt(drawn);
@@ -197,14 +218,8 @@ function paint() {
   if (!calm) { if (k > 0.02) { if (birdVid.paused) { birdVid.preload = 'auto'; birdVid.play().catch(() => {}); } } else if (!birdVid.paused) birdVid.pause(); }
 }
 
-function loop() {
-  raf = 0;
-  const d = want - drawn;
-  // the pen catches up with the scroll at an inky pace
-  drawn += Math.abs(d) < 0.5 ? d : d * 0.12 + Math.sign(d) * Math.min(Math.abs(d), 1.5);
-  paint();
-  if (Math.abs(want - drawn) > 0.5) raf = requestAnimationFrame(loop);
-}
+// the pen sits exactly where the scroll says, drawn at most once a frame
+function loop() { raf = 0; if (drawn !== want) { drawn = want; paint(); } }
 function onScroll() { if (calm) return; want = target(); if (!raf) raf = requestAnimationFrame(loop); }
 
 let lt = 0;

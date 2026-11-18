@@ -383,7 +383,8 @@ html.menu-open { overflow: hidden; }
    It sits under the windows, so it reads as a thread passing behind each one;
    it breaks around every label. ---------- */
 .route { position: absolute; left: 0; top: 0; width: 100%; height: 0; pointer-events: none; }
-.route-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 1px 1.5px rgba(8, 10, 16, .55)); }
+.route-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ink-shade { fill: none; stroke: rgba(8, 10, 16, .42); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .ink { fill: none; stroke: var(--light); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .84; }
 .sea-dots circle { fill: var(--light); opacity: 0; transition: opacity .5s ease; }
 .sea-dots circle.on { opacity: .8; }

@@ -44,7 +44,9 @@ async function take() {
     const tx = r.left + r.width * 0.42, ty = r.top + r.height * 0.55;
     await glide(tx, ty, 1300); if (stopped) break;
     await wait(250); zoomAt(tx, ty, true); await click();
-    await wait(1900);
+    // once the zoom has settled nothing moves for a moment: the page uses it to start the live pieces
+    await wait(1300); dispatchEvent(new Event('take:still'));
+    await wait(600);
     zoomAt(tx, ty, false); await wait(1100); if (stopped) break;
     await glide(innerWidth * 0.82, innerHeight * 0.32, 1500); await wait(400); await click();
     await wait(900);
@@ -57,6 +59,6 @@ if (rec && !calm) {
     if (scrollY > 30 && !stopped) { stopped = true; root.classList.remove('hx-zoomed'); rec.style.display = 'none'; }
   }, { passive: true });
   // the take begins when the site does (with the music: sound.js fires 'site:start')
-  const begin = () => setTimeout(() => { if (scrollY < 30) take(); else stopped = true; }, 900);
+  const begin = () => setTimeout(() => { if (scrollY < 30) take(); else stopped = true; }, 1600);
   if (window.siteStarted) begin(); else addEventListener('site:start', begin, { once: true });
 }

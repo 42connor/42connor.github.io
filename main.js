@@ -16,10 +16,16 @@ const CREDITS = [
   'Claude Monet, Poppy Field',
   'J. M. W. Turner, San Giorgio, sunset',
 ];
-const load = (p) => { if (!p.style.backgroundImage) p.style.backgroundImage = `url(${p.dataset.src})`; };
+// decode each painting ahead of time (off the main thread) so a crossfade never waits on it
+const load = (p) => {
+  if (p.style.backgroundImage || p._loading) return;
+  p._loading = true;
+  const im = new Image(); im.src = p.dataset.src;
+  (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(() => { p.style.backgroundImage = `url(${p.dataset.src})`; p._im = im; });
+};
 // the first is inline; the next one early, the rest once the page has loaded
 load(paints[1]);
-addEventListener('load', () => setTimeout(() => paints.forEach(load), 400), { once: true });
+addEventListener('load', () => paints.forEach((p, k) => setTimeout(() => load(p), 400 + k * 350)), { once: true });
 
 const credit = document.querySelector('.credit');
 const foot = document.querySelector('.foot');
@@ -86,13 +92,17 @@ function opening() {
 const pads = [...document.querySelectorAll('.pad')];
 const wide = matchMedia('(min-width: 960px)');
 function pond() {
-  if (!wide.matches) { pads.forEach((p) => p.style.removeProperty('--py')); return; }
+  if (!wide.matches) { pads.forEach((p) => { if (p._y) { p._win.style.transform = p._cap.style.transform = ''; p._y = 0; } }); return; }
   const mid = innerHeight / 2;
   for (const p of pads) {
+    p._win ||= p.querySelector('.win'); p._cap ||= p.querySelector('figcaption');
+    p._d ??= parseFloat(p.style.getPropertyValue('--d')) || 0;
     const r = p.getBoundingClientRect();
     if (r.bottom < -200 || r.top > innerHeight + 200) continue;
-    const d = parseFloat(p.style.getPropertyValue('--d')) || 0;
-    p.style.setProperty('--py', `${((r.top + r.height / 2 - mid) * d).toFixed(1)}px`);
+    const y = Math.round((r.top + r.height / 2 - mid) * p._d);
+    if (y === p._y) continue;
+    p._y = y;
+    p._win.style.transform = p._cap.style.transform = `translate3d(0, ${y}px, 0)`;
   }
 }
 
@@ -121,7 +131,8 @@ const io = new IntersectionObserver((es) => es.forEach((e) => {
 }), { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach((el) => (calm ? el.classList.add('in') : io.observe(el)));
 
-/* ---------- studio clips play while in view ---------- */
+/* ---------- clips play while in view (they're encoded at the size they're shown, so a few
+   at once are cheap; starting and stopping them as you scroll would cost more) ---------- */
 const vids = [...document.querySelectorAll('video[data-auto]')];
 if (!calm) {
   const vio = new IntersectionObserver((es) => es.forEach((e) => {
@@ -220,14 +231,43 @@ addEventListener('message', (e) => {
 addEventListener('blur', () => setTimeout(() => {
   if (hosts.some((h) => h._frame && document.activeElement === h._frame)) holdAuto();
 }, 0));
-// on a phone the site window lets the page scroll past it until it is tapped
-document.querySelectorAll('.win-site').forEach((w) => w.addEventListener('click', () => w.classList.add('is-awake')));
-const near = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && mount(e.target)), { rootMargin: '50% 0px' });
-const far = new IntersectionObserver((es) => es.forEach((e) => !e.isIntersecting && unmount(e.target)), { rootMargin: '110% 0px' });
+// start each piece just before it scrolls in, and stop it soon after it leaves; on a phone the
+// Common Ground site stays a picture until tapped (a whole site is a lot to run in a window)
+const phone = () => matchMedia('(max-width: 959px)').matches;
+const near = new IntersectionObserver((es) => es.forEach((e) => {
+  if (!e.isIntersecting) return;
+  if (phone() && e.target.matches('.win-site') && !e.target.classList.contains('is-awake')) return;
+  mount(e.target);
+}), { rootMargin: '100% 0px' });
+document.querySelectorAll('.win-site').forEach((w) => w.addEventListener('click', () => { w.classList.add('is-awake'); mount(w); }));
+// each piece pauses itself when off screen, so once loaded it stays: reloading it costs a warm-up stall every time
+const far = { observe() {} };
 const seen = new IntersectionObserver((es) => es.forEach((e) => { e.target._seen = e.isIntersecting; if (e.isIntersecting) take(e.target); }), { threshold: 0.65 });
 // a mounted window just off screen stops drawing (hidden frames are throttled) until it is back
 const onScreen = new IntersectionObserver((es) => es.forEach((e) => winOf(e.target).classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '10% 0px' });
 hosts.forEach((h) => { near.observe(h); far.observe(h); seen.observe(h); onScreen.observe(h); });
+// Start the pieces early, while the visitor is still on the opening: each has a start-up cost
+// that would otherwise land mid-scroll. The heaviest (murmuration's warm-up) goes as the page
+// opens (with the lotus leaf, whose large images take a while), before the cursor moves; the rest while the cursor's zoom holds still ('take:still'
+// from hero.js), or a few seconds in, or at the first scroll, whichever comes first. Off screen
+// they pause themselves. On a phone the Common Ground site still waits for a tap.
+{
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 60));
+  const ORDER = ['murmuration', 'lotus-leaf', 'koi-pond', 'ripple-pool', 'marbling', 'kintsugi'];
+  const rank = (h) => (h.dataset.piece ? ORDER.indexOf(h.dataset.piece) : 99);
+  const queue = hosts.filter((h) => !(h.matches('.win-site') && phone())).sort((x, y) => rank(x) - rank(y));
+  const firsts = queue.splice(0, 2);   // murmuration's warm-up and the lotus leaf's image work: before the cursor moves
+  const step = () => { const h = queue.shift(); if (!h) return; idle(() => { mount(h); setTimeout(step, 320); }, { timeout: 800 }); };
+  let rest = false;
+  const goRest = () => { if (rest) return; rest = true; step(); };
+  const onLoad = () => {
+    firsts.forEach((h, k) => setTimeout(() => idle(() => mount(h), { timeout: 400 }), k * 250));
+    addEventListener('take:still', goRest, { once: true });
+    setTimeout(goRest, 6500);
+    addEventListener('scroll', function once() { if (scrollY > 60) { removeEventListener('scroll', once); goRest(); } }, { passive: true });
+  };
+  if (document.readyState === 'complete') onLoad(); else addEventListener('load', onLoad, { once: true });
+}
 // the site window draws the real page at desktop width, scaled into the window
 const sizeSite = new ResizeObserver((es) => es.forEach((e) => e.target.style.setProperty('--s', (e.contentRect.width / 1280).toFixed(4))));
 document.querySelectorAll('.win-site').forEach((w) => sizeSite.observe(w));

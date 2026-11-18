@@ -48,20 +48,31 @@ const PIECES = {
   'ripple-pool': `<figure data-ripple-pool data-rain="5000"><img src="ripple-pool/assets/napoli-fish-ducks.webp" alt="" width="1200" height="1231"></figure>`,
   'murmuration': `<section class="mm-host"><img src="murmuration/assets/winter-sky-1800.webp" width="1800" height="1311" alt=""></section>`,
 };
+// These three start themselves lazily, as they near the screen, and their start-up is heavy.
+// The site loads the pieces while the visitor is still on the opening, so start these now:
+// load their code before the piece is on the page (so it finds nothing to start lazily),
+// then add the piece and start it here. Off screen they pause themselves.
+const EAGER = {
+  'koi-pond': (m, el) => { el._koiPond = m.koiPond(el); },
+  'marbling': (m, el) => { el.marbling = m.marbling(el); },
+  'ripple-pool': (m, el) => { m.ripplePool(el); },
+};
 if (PIECES[name]) {
   document.title = name;
   const css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = `${name}/${name}.css`;
   const ready = new Promise((r) => { css.onload = css.onerror = r; });
   document.head.append(css);
+  // (if the window is closed while it loads, the import is cut off: nothing to do then)
+  const early = EAGER[name] ? await import(`./${name}/${name}.js`).catch(() => null) : null;
   document.body.insertAdjacentHTML('afterbegin', PIECES[name]);
   const el = document.body.firstElementChild;
   await ready;
-  // (if the window is closed while it loads, the import is cut off: nothing to do then)
-  const mod = await import(`./${name}/${name}.js`).catch(() => null);
+  const mod = early || await import(`./${name}/${name}.js`).catch(() => null);
   if (mod) {
+    if (EAGER[name]) EAGER[name](mod, el);
     // the ones the site drives itself (the cursor's tap), or that need options
-    if (name === 'kintsugi') window.piece = mod.kintsugi(el);
+    else if (name === 'kintsugi') window.piece = mod.kintsugi(el);
     else if (name === 'murmuration') window.piece = mod.murmuration(el, { birds: narrow ? 1400 : 2600 });
     parent.postMessage({ live: name }, location.origin);
   }

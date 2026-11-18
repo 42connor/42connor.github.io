@@ -68,7 +68,8 @@ const first = (e) => {
     start();
 };
 GESTURES.forEach((g) => addEventListener(g, first, true));
-addEventListener('scroll', () => { if (scrollY > 40) start(); }, { passive: true });
+const onFirstScroll = () => { if (scrollY > 40) { removeEventListener('scroll', onFirstScroll); start(); } };
+addEventListener('scroll', onFirstScroll, { passive: true });
 if (store.get() === 'off') start();
 else {
     graph();
