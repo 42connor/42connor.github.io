@@ -37,13 +37,16 @@
 </div>
 <p class="credit" aria-hidden="true"><span class="credit-text">Vincent van Gogh, Almond Blossom</span></p>
 
+<!-- The start: shown only when the browser won't play sound until a click (sound.js) -->
+<button class="gate" type="button" aria-label="Enter, with sound"><span><i aria-hidden="true"></i>Enter</span></button>
+
 <header class="nav">
   <a class="nav-name" href="#top">Connor Hood</a>
   <nav class="nav-links" aria-label="Sections">
-    <a href="#work">Work</a>
-    <a href="#evolve">Evolve</a>
-    <a href="#systems">Systems</a>
     <a href="#studio">Studio</a>
+    <a href="#evolve">Evolve</a>
+    <a href="#work">Work</a>
+    <a href="#systems">Systems</a>
     <a href="#more">More</a>
   </nav>
   <div class="nav-end">
@@ -55,19 +58,39 @@
 
 <div class="menu" id="menu" hidden>
   <nav aria-label="Menu">
-    <a href="#work">Work</a>
-    <a href="#evolve">Evolve</a>
-    <a href="#systems">Systems</a>
     <a href="#studio">Studio</a>
+    <a href="#evolve">Evolve</a>
+    <a href="#work">Work</a>
+    <a href="#systems">Systems</a>
     <a href="#more">More</a>
     <a href="cv.html">CV</a>
     <a href="mailto:42connor@gmail.com">Email</a>
   </nav>
 </div>
 
+<!-- The route: one line drawn down the page, Adelaide to San Francisco and through every window (route.js) -->
+<div class="route" aria-hidden="true">
+  <svg class="route-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs><mask id="route-gaps" maskUnits="userSpaceOnUse"><rect class="gap-all" fill="#fff"/><g class="gaps" fill="#000"></g></mask></defs>
+    <g mask="url(#route-gaps)">
+      <path class="ink ink-a"/>
+      <g class="sea-dots"></g>
+      <path class="ink ink-b"/>
+    </g>
+    <g class="rings"></g>
+    <circle class="pen" r="3.4"/>
+  </svg>
+  <div class="marks">
+    <p class="mark" data-mark="sf"><b>San Francisco</b></p>
+    <p class="mark" data-mark="ft"><b>Frontier Tower</b><span>2026</span></p>
+    <p class="mark" data-mark="8090"><b>8090</b><span>November 2026</span></p>
+  </div>
+  <div class="swallows"><video src="media/swallows.mp4" poster="media/swallows.jpg" muted loop playsinline preload="none"></video></div>
+</div>
+
 <main>
 
-<!-- 1. Almond Blossom. A Monet Shot cursor clicks the name and zooms; the first window rises from below -->
+<!-- 1. Almond Blossom. A Monet Shot cursor clicks the name and zooms; the Evolve photo rises from below -->
 <section class="open" id="top" data-paint="0" data-slow>
   <div class="stage">
     <h1 class="name">Connor <span class="hx-target">Hood</span> <span class="role">AI systems engineer, San Francisco</span></h1>
@@ -78,108 +101,40 @@
     <figure class="piece piece-hero">
       <div class="rise">
         <div class="win win-hero">
-          <img src="ornaments/monetshot-window.webp" width="1800" height="1125" alt="A Monet Shot recording: the StyleFeatures collection page">
+          <picture>
+            <source type="image/webp" srcset="media/evolve-720.webp 720w, media/evolve-1200.webp 1200w, media/evolve-1920.webp 1920w" sizes="(max-width: 959px) 100vw, 62vw">
+            <img src="media/evolve-1200.jpg" width="1200" height="675" alt="Connor and his teammate holding Evolve second-place certificates with Chamath Palihapitiya, under a screen reading Second place goes to Common Ground">
+          </picture>
         </div>
       </div>
       <figcaption class="label">
-        <p class="l-head"><b>Monet Shot</b><span>2026</span><span>macOS app</span></p>
-        <p class="l-line">A screen recorder that zooms on your clicks and frames every take on a painting.</p>
-        <p class="l-links"><a href="https://monetshot.pages.dev/">Site</a><a href="https://github.com/SocialAcolyte/monet-shot">GitHub</a><button class="copy" type="button" data-copy="brew install --cask monet-shot"><code>brew install --cask monet-shot</code></button></p>
-      </figcaption>
-    </figure>
-  </div>
-  <i class="anchor" id="work"></i>
-</section>
-
-<!-- 2. Water Lilies. StyleFeatures: the film is a window -->
-<section class="part part-sf" id="stylefeatures" data-paint="1">
-  <div class="piece piece-film reveal">
-    <section class="film">
-      <div class="win win-film">
-        <video class="film-video" src="media/templates.mp4" poster="media/templates.jpg" muted loop playsinline preload="none"></video>
-      </div>
-      <div class="film-row">
-        <div class="label">
-          <p class="l-head"><b>StyleFeatures</b><span>2026</span><span>Web components</span></p>
-          <p class="l-line">88 living pieces drawn from paintings, plates, water, cloth and stone; 28 sites built from them.</p>
-          <p class="l-links"><a href="https://socialacolyte.github.io/stylefeatures/">Site</a><a href="https://github.com/SocialAcolyte/stylefeatures">GitHub</a></p>
-        </div>
-        <button class="film-play" type="button" aria-pressed="false"><span class="film-label">Watch with sound</span></button>
-      </div>
-    </section>
-  </div>
-
-  <div class="pond" data-slow>
-    <figure class="pad reveal" style="--x:4%;--y:4%;--w:24%;--d:.10"><div class="win"><img src="ornaments/sf/koi-pond.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Koi pond</figcaption></figure>
-    <figure class="pad reveal" style="--x:36%;--y:0%;--w:18%;--d:-.06"><div class="win"><img src="ornaments/sf/lotus-leaf.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Lotus leaf</figcaption></figure>
-    <figure class="pad reveal" style="--x:64%;--y:10%;--w:30%;--d:.14"><div class="win"><img src="ornaments/sf/waterfall-print.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Waterfall print</figcaption></figure>
-    <figure class="pad reveal" style="--x:14%;--y:40%;--w:20%;--d:-.10"><div class="win"><img src="ornaments/sf/kintsugi.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Kintsugi</figcaption></figure>
-    <figure class="pad reveal" style="--x:42%;--y:34%;--w:26%;--d:.04"><div class="win"><img src="ornaments/sf/reedbed.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Reedbed</figcaption></figure>
-    <figure class="pad reveal" style="--x:74%;--y:52%;--w:20%;--d:-.12"><div class="win"><img src="ornaments/sf/woodblock-print.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Woodblock print</figcaption></figure>
-    <figure class="pad reveal" style="--x:6%;--y:74%;--w:22%;--d:.12"><div class="win"><img src="ornaments/sf/gold-ground.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Gold ground</figcaption></figure>
-    <figure class="pad reveal" style="--x:40%;--y:72%;--w:24%;--d:-.04"><div class="win"><img src="ornaments/sf/marbling.webp" alt="" loading="lazy" width="800" height="500"></div><figcaption>Marbling</figcaption></figure>
-  </div>
-</section>
-
-<!-- 3. The Starry Night. Evolve -->
-<section class="part part-evolve" id="evolve" data-paint="2">
-  <h2 class="sec reveal">Evolve</h2>
-  <figure class="piece piece-wide reveal">
-    <div class="win">
-      <picture>
-        <source type="image/webp" srcset="media/evolve-720.webp 720w, media/evolve-1200.webp 1200w, media/evolve-1920.webp 1920w" sizes="(max-width: 960px) 100vw, 84vw">
-        <img src="media/evolve-1200.jpg" width="1200" height="675" loading="lazy" alt="Connor and his teammate holding Evolve second-place certificates with Chamath Palihapitiya, under a screen reading Second place goes to Common Ground">
-      </picture>
-    </div>
-    <figcaption class="label"><p class="l-head"><b>Second place</b><span>Evolve, 8090, November 2026</span></p></figcaption>
-  </figure>
-
-  <div class="pair">
-    <figure class="piece piece-pitch reveal">
-      <div class="win">
-        <picture>
-          <source type="image/webp" srcset="media/pitch-720.webp 720w, media/pitch-1200.webp 1200w, media/pitch-1790.webp 1790w" sizes="(max-width: 960px) 100vw, 54vw">
-          <img src="media/pitch-1200.jpg" width="1200" height="674" loading="lazy" alt="Connor presenting Common Ground at 8090">
-        </picture>
-      </div>
-      <figcaption class="label"><p class="l-head"><span>Presenting Common Ground, 8090</span></p></figcaption>
-    </figure>
-    <figure class="piece piece-cg reveal">
-      <div class="win"><img src="media/rows/common-ground.webp" width="960" height="720" loading="lazy" alt="The Common Ground site"></div>
-      <figcaption class="label">
-        <p class="l-head"><b>Common Ground</b><span>2026</span><span>Evolve hackathon, 8090</span></p>
-        <p class="l-line">Second place. A software factory for venture portfolios.</p>
+        <p class="l-head"><b>Second place</b><span>Evolve, 8090</span><span>November 2026</span></p>
+        <p class="l-line">Common Ground: a software factory for venture portfolios.</p>
         <p class="l-links"><a href="https://common-ground-theta.vercel.app/">Site</a><a href="https://github.com/SocialAcolyte/8090-project-Anushka-Connor">GitHub</a></p>
       </figcaption>
     </figure>
   </div>
 </section>
 
-<!-- 4. The Great Wave. Systems -->
-<section class="part part-systems" id="systems" data-paint="3">
-  <h2 class="sec reveal">Systems</h2>
-  <div class="pair pair-sys">
-    <figure class="piece piece-mcp reveal">
-      <div class="win"><img src="media/rows/mcp.webp" width="960" height="720" loading="lazy" alt="An MCP server's site"></div>
-      <figcaption class="label">
-        <p class="l-head"><b>MCP servers</b><span>2025–</span><span>Dozens built</span></p>
-        <p class="l-line">The largest runs QuickBooks Enterprise across 85+ company files for a 36-building property portfolio.</p>
-        <p class="l-links"><a href="https://github.com/SocialAcolyte">GitHub</a></p>
-      </figcaption>
-    </figure>
-    <figure class="piece piece-gfn reveal">
-      <div class="win"><img src="media/rows/gfn.webp" width="960" height="720" loading="lazy" alt="Global Footprint Network"></div>
-      <figcaption class="label">
-        <p class="l-head"><b>NFBA 2027 pilot</b><span>2026</span><span>Global Footprint Network</span></p>
-        <p class="l-line">A pipeline that loaded and checked ~31M rows of FAOSTAT data for the national footprint accounts.</p>
-        <p class="l-links"><a href="https://www.footprintnetwork.org/">Site</a></p>
-      </figcaption>
-    </figure>
-  </div>
+<!-- 1b. Almond Blossom still. Adelaide: where the route starts, the production floor and Scouts as its first stops -->
+<section class="part part-start" id="adelaide" data-paint="0" aria-label="Adelaide">
+  <h2 class="sec reveal">Adelaide</h2>
+  <ol class="stops">
+    <li class="stop" style="--x:4%"><i class="tick"></i><b>BlueScope Steel</b><span>2021–22</span></li>
+    <li class="stop is-award" style="--x:9%"><i class="tick"></i><b>Queen Scout Award</b><span>2022</span></li>
+    <li class="stop" style="--x:13%"><i class="tick"></i><b>Coopers Brewery</b><span>2022–24</span></li>
+    <li class="stop" style="--x:10%"><i class="tick"></i><b>Senector</b><span>2023</span></li>
+    <li class="stop is-award" style="--x:5%"><i class="tick"></i><b>Rotary Youth Leadership Award</b><span>2023</span></li>
+    <li class="stop" style="--x:8%"><i class="tick"></i><b>Haigh’s Chocolates</b><span>2024</span></li>
+    <li class="stop is-award" style="--x:15%"><i class="tick"></i><b>National Volunteer Week</b><span>2024</span></li>
+    <li class="stop" style="--x:19%"><i class="tick"></i><b>Thermo Fisher Scientific</b></li>
+    <li class="stop is-award" style="--x:16%"><i class="tick"></i><b>Scouts SA Special Service Award</b><span>2025</span></li>
+  </ol>
+  <div class="sea" aria-hidden="true"></div>
 </section>
 
-<!-- 5. Poppy Field. The studio -->
-<section class="part part-studio" id="studio" data-paint="4">
+<!-- 2. Water Lilies. The studio -->
+<section class="part part-studio" id="studio" data-paint="1">
   <h2 class="sec reveal">Studio</h2>
   <figure class="piece piece-clips">
     <div class="clips">
@@ -201,6 +156,94 @@
       <p class="l-line">Synchronous ASL hand-motion video for training.</p>
     </figcaption>
   </figure>
+</section>
+
+<!-- 3. The Starry Night. Evolve: the pitch, Common Ground, the demo room -->
+<section class="part part-evolve" id="evolve" data-paint="2">
+  <h2 class="sec reveal">Evolve</h2>
+  <div class="pair">
+    <figure class="piece piece-pitch reveal">
+      <div class="win">
+        <picture>
+          <source type="image/webp" srcset="media/pitch-720.webp 720w, media/pitch-1200.webp 1200w, media/pitch-1790.webp 1790w" sizes="(max-width: 960px) 100vw, 54vw">
+          <img src="media/pitch-1200.jpg" width="1200" height="674" loading="lazy" alt="Connor presenting Common Ground at 8090">
+        </picture>
+      </div>
+      <figcaption class="label"><p class="l-head"><span>Presenting Common Ground, 8090</span></p></figcaption>
+    </figure>
+    <figure class="piece piece-cg reveal">
+      <div class="win win-site" data-site="https://common-ground-theta.vercel.app/" data-title="The Common Ground site, live"><img src="media/rows/common-ground.webp" width="960" height="720" loading="lazy" alt="The Common Ground site"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>Common Ground</b><span>2026</span><span>Evolve hackathon, 8090</span></p>
+        <p class="l-line">Second place. A software factory for venture portfolios.</p>
+        <p class="l-links"><a href="https://common-ground-theta.vercel.app/">Site</a><a href="https://github.com/SocialAcolyte/8090-project-Anushka-Connor">GitHub</a><span class="live">Live</span></p>
+      </figcaption>
+    </figure>
+  </div>
+  <figure class="piece piece-demo reveal">
+    <div class="win clip"><video data-auto src="media/demo-room.mp4" poster="media/demo-room.jpg" muted loop playsinline preload="none" aria-label="The demo room at 8090"></video></div>
+    <figcaption class="label"><p class="l-head"><span>The demo room, 8090</span></p></figcaption>
+  </figure>
+</section>
+
+<!-- 4. The Great Wave. Work: Monet Shot, then StyleFeatures -->
+<section class="part part-work" id="work" data-paint="3">
+  <h2 class="sec reveal">Work</h2>
+  <figure class="piece piece-wide piece-monet reveal">
+    <div class="win win-take"><video data-auto src="media/monetshot-take.mp4" poster="media/monetshot-take.jpg" width="1600" height="900" muted loop playsinline preload="none" aria-label="A Monet Shot take: a StyleFeatures page recorded, zoomed on its clicks and framed on a painting"></video></div>
+    <figcaption class="label">
+      <p class="l-head"><b>Monet Shot</b><span>2026</span><span>macOS app</span></p>
+      <p class="l-line">A screen recorder that zooms on your clicks and frames every take on a painting.</p>
+      <p class="l-links"><a href="https://monetshot.pages.dev/">Site</a><a href="https://github.com/SocialAcolyte/monet-shot">GitHub</a><button class="copy" type="button" data-copy="brew install --cask monet-shot"><code>brew install --cask monet-shot</code></button></p>
+    </figcaption>
+  </figure>
+  <div class="piece piece-film reveal" id="stylefeatures">
+    <section class="film">
+      <div class="win win-film">
+        <video class="film-video" src="media/templates.mp4" poster="media/templates.jpg" muted loop playsinline preload="none"></video>
+      </div>
+      <div class="film-row">
+        <div class="label">
+          <p class="l-head"><b>StyleFeatures</b><span>2026</span><span>Web components</span></p>
+          <p class="l-line">88 living pieces drawn from paintings, plates, water, cloth and stone; 28 sites built from them.</p>
+          <p class="l-links"><a href="https://socialacolyte.github.io/stylefeatures/">Site</a><a href="https://github.com/SocialAcolyte/stylefeatures">GitHub</a></p>
+        </div>
+        <button class="film-play" type="button" aria-pressed="false"><span class="film-label">Watch with sound</span></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="pond" data-slow>
+    <figure class="pad reveal" data-piece="koi-pond" style="--x:0%;--y:0vh;--w:48%;--a:16 / 9;--d:.05"><div class="win win-live"><img src="ornaments/sf/koi-pond.webp" alt="" loading="lazy"></div><figcaption>Koi pond<span class="live">Live</span></figcaption></figure>
+    <figure class="pad reveal" data-piece="kintsugi" style="--x:60%;--y:14vh;--w:32%;--a:5 / 4;--d:-.06"><div class="win win-live"><img src="ornaments/sf/kintsugi.webp" alt="" loading="lazy"></div><figcaption>Kintsugi<span class="live">Live</span></figcaption></figure>
+    <figure class="pad reveal" data-piece="murmuration" style="--x:12%;--y:66vh;--w:44%;--a:1.373;--d:.08"><div class="win win-live"><img src="ornaments/sf/murmuration.webp" alt="" loading="lazy"></div><figcaption>Murmuration<span class="live">Live</span></figcaption></figure>
+    <figure class="pad reveal" data-piece="lotus-leaf" style="--x:66%;--y:82vh;--w:30%;--a:1.18;--d:-.05"><div class="win win-live"><img src="ornaments/sf/lotus-leaf.webp" alt="" loading="lazy"></div><figcaption>Lotus leaf<span class="live">Live</span></figcaption></figure>
+    <figure class="pad reveal" data-piece="marbling" style="--x:3%;--y:132vh;--w:30%;--a:4 / 3;--d:.06"><div class="win win-live"><img src="ornaments/sf/marbling.webp" alt="" loading="lazy"></div><figcaption>Marbling<span class="live">Live</span></figcaption></figure>
+    <figure class="pad reveal" data-piece="ripple-pool" style="--x:44%;--y:144vh;--w:34%;--a:6 / 5;--d:-.04"><div class="win win-live"><img src="pieces/ripple-pool/poster.webp" alt="" loading="lazy"></div><figcaption>Ripple pool<span class="live">Live</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- 5. Poppy Field. Systems -->
+<section class="part part-systems" id="systems" data-paint="4">
+  <h2 class="sec reveal">Systems</h2>
+  <div class="pair pair-sys">
+    <figure class="piece piece-mcp reveal">
+      <div class="win"><img src="media/rows/mcp.webp" width="960" height="720" loading="lazy" alt="An MCP server's site"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>MCP servers</b><span>2025–</span><span>Dozens built</span></p>
+        <p class="l-line">The largest runs QuickBooks Enterprise across 85+ company files for a 36-building property portfolio.</p>
+        <p class="l-links"><a href="https://github.com/SocialAcolyte">GitHub</a></p>
+      </figcaption>
+    </figure>
+    <figure class="piece piece-gfn reveal">
+      <div class="win"><img src="media/rows/gfn.webp" width="960" height="720" loading="lazy" alt="Global Footprint Network"></div>
+      <figcaption class="label">
+        <p class="l-head"><b>NFBA 2027 pilot</b><span>2026</span><span>Global Footprint Network</span></p>
+        <p class="l-line">A pipeline that loaded and checked ~31M rows of FAOSTAT data for the national footprint accounts.</p>
+        <p class="l-links"><a href="https://www.footprintnetwork.org/">Site</a></p>
+      </figcaption>
+    </figure>
+  </div>
 </section>
 
 <!-- 6. Turner. More, then the footer on a dark scrim -->
@@ -301,6 +344,7 @@
     </div>
 
     <p class="credits">© 2026 Connor Hood · Music: “Jaago” by Lifafa · Paintings public domain: Vincent van Gogh, <i>Almond Blossom</i>; Claude Monet, <i>Water Lilies</i>, <i>Poppy Field</i>; Vincent van Gogh, <i>The Starry Night</i>; Katsushika Hokusai, <i>The Great Wave off Kanagawa</i>; J. M. W. Turner, <i>San Giorgio, sunset</i></p>
+    <p class="credits credits-live">Live StyleFeatures pieces, code MIT, pictures credited with each: <a href="pieces/koi-pond/CREDITS.md">Koi pond</a> · <a href="pieces/kintsugi/CREDITS.md">Kintsugi</a> · <a href="pieces/murmuration/CREDITS.md">Murmuration</a> · <a href="pieces/lotus-leaf/CREDITS.md">Lotus leaf</a> · <a href="pieces/marbling/CREDITS.md">Marbling</a> · <a href="pieces/ripple-pool/CREDITS.md">Ripple pool</a></p>
   </div>
 </footer>
 
@@ -313,5 +357,6 @@
 <script type="module" src="autoscroll.js"></script>
 <script type="module" src="main.js"></script>
 <script type="module" src="hero.js"></script>
+<script type="module" src="route.js"></script>
 </body>
 </html>

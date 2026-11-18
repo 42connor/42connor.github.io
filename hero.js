@@ -8,6 +8,7 @@ const name = document.querySelector('.name');
 const root = document.documentElement;
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
 let x = innerWidth + 40, y = innerHeight * 0.8, stopped = false;
 
 function glide(tx, ty, ms) {
@@ -42,8 +43,8 @@ async function take() {
     const r = target.getBoundingClientRect();
     const tx = r.left + r.width * 0.42, ty = r.top + r.height * 0.55;
     await glide(tx, ty, 1300); if (stopped) break;
-    await wait(250); await click();
-    zoomAt(tx, ty, true); await wait(1900);
+    await wait(250); zoomAt(tx, ty, true); await click();
+    await wait(1900);
     zoomAt(tx, ty, false); await wait(1100); if (stopped) break;
     await glide(innerWidth * 0.82, innerHeight * 0.32, 1500); await wait(400); await click();
     await wait(900);
@@ -55,5 +56,7 @@ if (rec && !calm) {
   addEventListener('scroll', () => {
     if (scrollY > 30 && !stopped) { stopped = true; root.classList.remove('hx-zoomed'); rec.style.display = 'none'; }
   }, { passive: true });
-  setTimeout(() => { if (scrollY < 30) take(); else stopped = true; }, 1500);
+  // the take begins when the site does (with the music: sound.js fires 'site:start')
+  const begin = () => setTimeout(() => { if (scrollY < 30) take(); else stopped = true; }, 900);
+  if (window.siteStarted) begin(); else addEventListener('site:start', begin, { once: true });
 }

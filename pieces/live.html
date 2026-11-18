@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>StyleFeatures piece</title>
+<link rel="icon" href="data:,">
+<style>
+  /* One StyleFeatures piece, running alone in a window on the site. The pieces are
+     copied unchanged from stylefeatures (MIT code; their pictures are credited in
+     each folder's CREDITS.md). No sound here: the site has its own music. */
+  :root { --paper: #f3f0e8; --paper-2: #e9e5da; --ink: #141312; --ink-2: #4a4744; --ink-3: #8a857d; --rule: #cfcac0; --accent: #c96f4a; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--paper); }
+  body > * { position: absolute !important; inset: 0; width: 100% !important; height: 100% !important; margin: 0 !important; max-width: none !important; aspect-ratio: auto !important; }
+  body { cursor: pointer; }
+  img { -webkit-user-drag: none; }
+
+  /* koi pond: a band of water across the whole window */
+  [data-koi-pond] { top: -7% !important; height: 114% !important; }   /* its soft shore runs off the window's edges */
+  [data-koi-pond] > img { width: 100%; height: 100%; object-fit: cover; }
+  /* lotus leaves lie on the paper */
+  /* kintsugi: the dish on its sheet */
+  .kt { --kt-size: .74; --kt-size-narrow: .74; }
+  /* marbling: a bare bath, edge to edge */
+  [data-marbling] { --mb-rim: 0px; --mb-aspect: 4 / 3; --mb-aspect-phone: 4 / 3; }
+  [data-marbling] .mb-stage { box-shadow: none; border-radius: 0; height: 100%; }
+  [data-marbling] .mb-bath { height: 100%; aspect-ratio: auto; }
+  /* ripple pool: the mosaic fills the window */
+  [data-ripple-pool] > img { width: 100%; height: 100%; object-fit: cover; }
+  [data-ripple-pool]::after { display: none; }
+  /* murmuration: the painting fills the window */
+  .mm-host > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head>
+<body>
+<script type="module">
+const name = new URLSearchParams(location.search).get('p');
+const narrow = innerWidth < 560;
+const PIECES = {
+  'koi-pond': `<figure data-koi-pond data-koi="${narrow ? 3 : 4}"><img src="koi-pond/assets/koi-pond-still.webp" alt=""></figure>`,
+  'lotus-leaf': `<figure data-lotus-leaf data-span="${narrow ? 300 : 380}">
+      <img src="lotus-leaf/assets/lotus-leaf.webp" alt="" width="2000" height="1730" data-navel=".4995 .4948" data-radius=".4523">
+      <img src="lotus-leaf/assets/lotus-leaf-2.webp" alt="" width="2000" height="1915" data-navel=".4957 .5383" data-radius=".4756">
+      <img src="lotus-leaf/assets/lotus-bud.webp" alt="" width="374" height="496" data-navel=".5 .88" data-radius=".5"></figure>`,
+  'kintsugi': `<figure class="kt" data-pause="2200"><img src="kintsugi/assets/hydrangea-dish.webp" alt="" width="1600" height="1592"></figure>`,
+  'marbling': `<figure data-marbling data-autoplay="loop" data-controls="none" data-hold="6"><img src="../ornaments/sf/marbling.webp" alt=""></figure>`,
+  'ripple-pool': `<figure data-ripple-pool data-rain="5000"><img src="ripple-pool/assets/napoli-fish-ducks.webp" alt="" width="1200" height="1231"></figure>`,
+  'murmuration': `<section class="mm-host"><img src="murmuration/assets/winter-sky-1800.webp" width="1800" height="1311" alt=""></section>`,
+};
+if (PIECES[name]) {
+  document.title = name;
+  const css = document.createElement('link');
+  css.rel = 'stylesheet'; css.href = `${name}/${name}.css`;
+  const ready = new Promise((r) => { css.onload = css.onerror = r; });
+  document.head.append(css);
+  document.body.insertAdjacentHTML('afterbegin', PIECES[name]);
+  const el = document.body.firstElementChild;
+  await ready;
+  // (if the window is closed while it loads, the import is cut off: nothing to do then)
+  const mod = await import(`./${name}/${name}.js`).catch(() => null);
+  if (mod) {
+    // the ones the site drives itself (the cursor's tap), or that need options
+    if (name === 'kintsugi') window.piece = mod.kintsugi(el);
+    else if (name === 'murmuration') window.piece = mod.murmuration(el, { birds: narrow ? 1400 : 2600 });
+    parent.postMessage({ live: name }, location.origin);
+  }
+}
+</script>
+</body>
+</html>

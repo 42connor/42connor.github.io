@@ -5,6 +5,7 @@ const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 
+
 /* ---------- the painting ---------- */
 const paints = [...document.querySelectorAll('.paint')];
 const CREDITS = [
@@ -102,7 +103,7 @@ function frame() {
   const z = whichPainting();
   if (z) {
     show(z.i);
-    navLinks.forEach((a) => a.classList.toggle('is-here', a.getAttribute('href') === `#${({ top: 'work', stylefeatures: 'work', contact: 'more' })[z.id] || z.id}`));
+    navLinks.forEach((a) => a.classList.toggle('is-here', a.getAttribute('href') === `#${({ contact: 'more' })[z.id] || z.id}`));
   }
   credit.classList.toggle('is-gone', foot.getBoundingClientRect().top < innerHeight * 0.75);
   if (!calm) { opening(); pond(); }
@@ -116,7 +117,7 @@ document.fonts?.ready.then(() => { if (!calm) measure(); request(); });
 
 /* ---------- reveals ---------- */
 const io = new IntersectionObserver((es) => es.forEach((e) => {
-  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  if (e.isIntersecting) { const el = e.target; io.unobserve(el); el.classList.add('in'); }
 }), { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach((el) => (calm ? el.classList.add('in') : io.observe(el)));
 
@@ -170,3 +171,92 @@ const t = document.querySelector('.sf-time');
 const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
 const tick = () => { t.textContent = fmt.format(new Date()); };
 tick(); setInterval(tick, 30000);
+
+/* ---------- the work, running: StyleFeatures pieces and the Common Ground site live in
+   their windows. Each loads only as it nears the screen and is unloaded once it is far
+   away again; until it is running, the window shows its still. ---------- */
+const hosts = [...document.querySelectorAll('[data-piece], .win-site')];
+const winOf = (h) => (h.matches('.win') ? h : h.querySelector('.win'));
+let lastHold = 0;
+const holdAuto = () => {   // autoscroll.js hands the page back on any wheel; a hand in a window counts too
+  const n = performance.now(); if (n - lastHold < 400) return; lastHold = n;
+  dispatchEvent(new Event('wheel'));
+};
+function mount(h) {
+  if (h._frame) return;
+  const win = winOf(h);
+  const f = document.createElement('iframe');
+  if (h.dataset.piece) {
+    f.src = `pieces/live.html?p=${h.dataset.piece}`;
+    f.title = `${h.querySelector('figcaption').firstChild.textContent}, a StyleFeatures piece, running`;
+  } else {
+    f.src = h.dataset.site; f.title = h.dataset.title;
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.addEventListener('load', () => setTimeout(() => h._frame === f && win.classList.add('is-live'), 350));
+  }
+  f.addEventListener('load', () => {
+    // same origin: a touch inside counts as a touch on the page (autoscroll holds; the music may start)
+    try {
+      const w = f.contentWindow;
+      w.addEventListener('pointerdown', () => { h._touched = true; holdAuto(); dispatchEvent(new PointerEvent('pointerdown')); }, { passive: true });
+      ['pointermove', 'wheel', 'touchstart'].forEach((ev) => w.addEventListener(ev, holdAuto, { passive: true }));
+    } catch {}
+  });
+  h._frame = f;
+  win.append(f);
+}
+function unmount(h) {
+  if (!h._frame) return;
+  h._frame.remove(); h._frame = null;
+  winOf(h).classList.remove('is-live');
+}
+addEventListener('message', (e) => {
+  if (e.origin !== location.origin || !e.data?.live) return;
+  const h = hosts.find((x) => x._frame && x._frame.contentWindow === e.source);
+  if (!h) return;
+  setTimeout(() => { if (h._frame) { winOf(h).classList.add('is-live'); h._piece = e.source.piece; take(h); } }, 250);
+});
+// a click into the cross-origin site takes focus from the page: hold the autoscroll for it
+addEventListener('blur', () => setTimeout(() => {
+  if (hosts.some((h) => h._frame && document.activeElement === h._frame)) holdAuto();
+}, 0));
+// on a phone the site window lets the page scroll past it until it is tapped
+document.querySelectorAll('.win-site').forEach((w) => w.addEventListener('click', () => w.classList.add('is-awake')));
+const near = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && mount(e.target)), { rootMargin: '50% 0px' });
+const far = new IntersectionObserver((es) => es.forEach((e) => !e.isIntersecting && unmount(e.target)), { rootMargin: '110% 0px' });
+const seen = new IntersectionObserver((es) => es.forEach((e) => { e.target._seen = e.isIntersecting; if (e.isIntersecting) take(e.target); }), { threshold: 0.65 });
+// a mounted window just off screen stops drawing (hidden frames are throttled) until it is back
+const onScreen = new IntersectionObserver((es) => es.forEach((e) => winOf(e.target).classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '10% 0px' });
+hosts.forEach((h) => { near.observe(h); far.observe(h); seen.observe(h); onScreen.observe(h); });
+// the site window draws the real page at desktop width, scaled into the window
+const sizeSite = new ResizeObserver((es) => es.forEach((e) => e.target.style.setProperty('--s', (e.contentRect.width / 1280).toFixed(4))));
+document.querySelectorAll('.win-site').forEach((w) => sizeSite.observe(w));
+
+/* ---------- the Monet Shot cursor takes the first tap on two of them, once each:
+   it glides in, clicks and the piece answers ---------- */
+const TAPS = {
+  kintsugi: { at: (w, hgt) => { const r = 0.37 * Math.min(w, hgt); return [w / 2 + 0.22 * r, hgt / 2 - 0.3 * r]; }, go: (p) => p.strike?.(0.22, -0.3) },
+  murmuration: { at: (w, hgt) => [w * 0.6, hgt * 0.3], go: (p) => p.scatter?.(0.6, 0.3) },
+};
+const CURSOR = '<svg viewBox="0 0 28 28" width="26" height="26"><path d="M6 3.5v19.2l4.9-4.6 3.1 7.1 3.4-1.5-3.1-6.9h6.6z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg><i></i>';
+async function take(h) {
+  const tap = TAPS[h.dataset.piece];
+  if (calm || !tap || h._took || !h._seen || !h._piece || h._touched) return;
+  h._took = true;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  await wait(900);
+  const win = winOf(h), W = win.offsetWidth, H = win.offsetHeight;
+  const c = document.createElement('div'); c.className = 'tap'; c.setAttribute('aria-hidden', 'true'); c.innerHTML = CURSOR;
+  h.append(c);
+  const [tx, ty] = tap.at(W, H);
+  const mv = (from, to, ms) => c.animate([{ transform: `translate3d(${from[0]}px, ${from[1]}px, 0)` }, { transform: `translate3d(${to[0]}px, ${to[1]}px, 0)` }],
+    { duration: ms, easing: 'cubic-bezier(.65, 0, .25, 1)', fill: 'forwards' }).finished;
+  await mv([W + 30, H * 0.95], [tx, ty], 1300);
+  await wait(200);
+  if (!h._frame || h._touched) { c.remove(); return; }
+  c.classList.add('is-click');
+  tap.go(h._piece);
+  await wait(1100);
+  await mv([tx, ty], [W + 30, H * 1.05], 1200);
+  c.remove();
+}

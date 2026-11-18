@@ -3,8 +3,9 @@
    in the corner turns it off for good (until pressed again). */
 const btn = document.getElementById('auto');
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const SPEED = 270;       // px per second
-const START = 6400;      // let the cursor make its first take first
+const SPEED = 270;       // px per second, when there is no music to finish with
+const EARLY = 7;         // seconds: reach the footer this long before the song ends
+const START = 5800;      // after the site starts: let the cursor make its first take first
 const RESUME = 3200;     // idle time before it takes over again
 
 let locked = calm;       // the button (or reduced motion) has turned it off
@@ -22,6 +23,16 @@ function go() {
   held = false; pos = scrollY; last = 0;
   cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
 }
+// With the song playing, pace the page so it arrives at the footer EARLY seconds before the
+// song ends, and sits there while the song resolves. Re-planned every frame, so it still
+// lands right after the visitor scrolls by hand or pauses for the film.
+function speed() {
+  const m = window.siteMusic;
+  if (!m || m.paused || !isFinite(m.duration)) return SPEED;
+  const left = m.duration - EARLY - m.currentTime;
+  if (left < 1) return SPEED * 1.6;
+  return Math.min(900, Math.max(90, (max() - pos) / left));
+}
 function tick(t) {
   if (held || locked) return;
   if (last) {
@@ -37,7 +48,9 @@ function tick(t) {
       const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0;
     });
     const k = slow ? .85 : 1;
-    pos = Math.min(max(), pos + SPEED * k * Math.min(.05, (t - last) / 1000));
+    // paced to the song, the plan already covers the slower scenes, so no extra slowing
+    const paced = window.siteMusic && !window.siteMusic.paused;
+    pos = Math.min(max(), pos + speed() * (paced ? 1 : k) * Math.min(.05, (t - last) / 1000));
     scrollTo({ top: pos, behavior: 'instant' });   // instant: never a glide, whatever the css says
     if (pos >= max() - 1) { held = true; return; }          // the end: stay put
   }
@@ -56,4 +69,6 @@ btn.addEventListener('click', () => {
   if (locked) { held = true; clearTimeout(timer); } else go();
 });
 paint();
-if (!locked) timer = setTimeout(go, START);
+// starts once the site has (sound.js fires 'site:start' with the music)
+const kickoff = () => { if (!locked) timer = setTimeout(go, START); };
+if (window.siteStarted) kickoff(); else addEventListener('site:start', kickoff, { once: true });

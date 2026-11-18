@@ -6,9 +6,14 @@ clicks the name and zooms; the first window rises from below; the painting cross
 section by section.
 
 - `index.html`, `style.css`, `main.js`: the page. `hero.css`, `hero.js`: the opening cursor take.
-- `sound.js`: the music ("Jaago" by Lifafa, `media/music.m4a`, cut to start at the drop and
-  loop the hard section), the dock button, and the StyleFeatures film that ducks it.
-- `autoscroll.js`: the page reads itself; any touch hands it back.
+- `sound.js`: the music ("Jaago" by Lifafa, `media/music.m4a`, from the drop, played once) and
+  the start: if the browser allows sound, music and site begin together; if not, one quiet Enter
+  over the opening starts both. Also the dock button and the StyleFeatures film that ducks it.
+- `route.js`: the ink line from Adelaide (production floor, Scouts) across the Pacific to San
+  Francisco and behind every window.
+- `pieces/`: six StyleFeatures pieces running live in the Work section (credits in each folder);
+  Common Ground's window is the live site.
+- `autoscroll.js`: the page reads itself, paced to land on the footer ~7 s before the song ends; any touch hands it back.
 - `cv.html` (with `site.css`, `nav.js`): the CV.
 - `v/` (not committed): the six design variants and six openings this came from.
 
