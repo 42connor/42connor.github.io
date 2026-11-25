@@ -3,15 +3,17 @@
    in the corner turns it off for good (until pressed again). */
 const btn = document.getElementById('auto');
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const SPEED = 270;       // px per second, when there is no music to finish with
+const SPEED = 205;       // px per second, when there is no music to finish with
+const STRETCH = 1.25;    // read a quarter slower than the song: it finishes a little before the footer
 const EARLY = 7;         // seconds: reach the footer this long before the song ends
 const START = 5800;      // after the site starts: let the cursor make its first take first
 const RESUME = 3200;     // idle time before it takes over again
 
 let locked = calm;       // the button (or reduced motion) has turned it off
 let held = true;         // paused for now, by the visitor's own scrolling
-let pos = scrollY, last = 0, timer = 0, raf = 0;
+let pos = scrollY, prev = scrollY, last = 0, timer = 0, raf = 0, vel = 0, top = 0;
 const max = () => document.documentElement.scrollHeight - innerHeight;
+const slowZones = [...document.querySelectorAll('[data-slow]')];
 
 function paint() { btn.setAttribute('aria-pressed', String(!locked)); }
 function hold(ms = RESUME) {
@@ -20,7 +22,7 @@ function hold(ms = RESUME) {
 }
 function go() {
   if (locked || document.hidden) return;
-  held = false; pos = scrollY; last = 0;
+  held = false; pos = prev = scrollY; last = 0; vel = 0;
   cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
 }
 // With the song playing, pace the page so it arrives at the footer EARLY seconds before the
@@ -29,9 +31,9 @@ function go() {
 function speed() {
   const m = window.siteMusic;
   if (!m || m.paused || !isFinite(m.duration)) return SPEED;
-  const left = m.duration - EARLY - m.currentTime;
+  const left = m.duration * STRETCH - EARLY - m.currentTime;
   if (left < 1) return SPEED * 1.6;
-  return Math.min(900, Math.max(90, (max() - pos) / left));
+  return Math.min(900, Math.max(90, (top - pos) / left));
 }
 function tick(t) {
   if (held || locked) return;
@@ -43,16 +45,22 @@ function tick(t) {
     if (document.documentElement.classList.contains('film-on')) { hold(); return; }
     // the menu is open: leave the page where it is
     if (document.documentElement.classList.contains('menu-open')) { hold(); return; }
-    // a touch slower through anything marked data-slow (scenes that move with scroll)
-    const slow = [...document.querySelectorAll('[data-slow]')].some((el) => {
-      const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0;
-    });
-    const k = slow ? .85 : 1;
-    // paced to the song, the plan already covers the slower scenes, so no extra slowing
+    // the browser moved the page a little on its own (scroll anchoring when something above
+    // changes size): go on from where it put us instead of yanking it back. Phones can report the
+    // position a frame late, which matches the previous target, so that alone is not a move.
+    if (Math.abs(scrollY - pos) > 2 && Math.abs(scrollY - prev) > 2) pos = scrollY;
+    prev = pos;
+    top = max();
+    // paced to the song the plan already covers the slower scenes; otherwise a touch slower through
+    // anything marked data-slow (only measured when it matters: no layout reads on the paced path)
     const paced = window.siteMusic && !window.siteMusic.paused;
-    pos = Math.min(max(), pos + speed() * (paced ? 1 : k) * Math.min(.05, (t - last) / 1000));
+    const k = paced ? 1 : (slowZones.some((el) => { const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }) ? .85 : 1);
+    // ease the speed toward its target, so a re-plan never shows up as a lurch
+    const dt = Math.min(.05, (t - last) / 1000), want = speed() * k;
+    vel += (want - vel) * Math.min(1, dt * 2.5);
+    pos = Math.min(top, pos + vel * dt);
     scrollTo({ top: pos, behavior: 'instant' });   // instant: never a glide, whatever the css says
-    if (pos >= max() - 1) { held = true; return; }          // the end: stay put
+    if (pos >= top - 1) { held = true; return; }          // the end: stay put
   }
   last = t; raf = requestAnimationFrame(tick);
 }

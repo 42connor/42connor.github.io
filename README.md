@@ -68,3 +68,15 @@ ink to full colour as they reach the middle of the screen.
 
 Respects `prefers-reduced-motion` (finished states, nothing pinned) and prints
 `cv.html` as a clean PDF.
+
+## Added November 2026
+- **Gilded Almond Blossom** (`gild.js`): the first painting is drawn in WebGL. Van Gogh's dark branch outlines and the wood are laid in gold leaf, which runs out along the branches from the trunk when the page opens (path length along the wood, baked at load). The leaf is cut into tiny facets that flash under a candle: the pointer, or on phones a slow wander that follows the scroll. The paint is relit as relief and the petals glow near the light. Debug: `?gild=1` (masks), `?gild=2` (path length), `?gilded`, `?run=0.5`, `?lx=.3&ly=.4` (fix the candle), `?bare`.
+- **The Starry Night, machined** (`steel.js`): behind Hackathons the painting becomes anodized aluminium in its own colours, every brushstroke edge a diamond-cut chamfer that flashes as the light crosses it, the moon and stars lathe-turned. On arrival the light comes in from the left and the metal comes up under it; a studio softbox glides across the surface as you scroll the wins. It also lights the section's metal type (`[data-metal]`). `?machined` shows it from the start, `?box=0.4` holds the softbox.
+- **Hackathons**: two win blocks, 8090 (second place: Chamath photo, the pitch, the live Common Ground site) and Impossibl (won: the demo, the night with Fabio), each piled onto a big machined-metal mark, "2nd" and "Won".
+- **Bridging lines** (class `bridge` / `lead-bridge`): one short line between his sentences and before section leads, a little quieter than what they lead to.
+- **Autoscroll** paces itself to 1.25x the song's length (`STRETCH`), so it reads a quarter slower and reaches the footer shortly after the song ends.
+- **Gold swallows** (`swallows.js`, `media/swallows-sheet.png`): the engraved trio from `swallows.mp4`, cut to a 63-frame grey mask, flown live in WebGL. Champagne gold with an ink keyline, lit by the same candle, frame-blended wingbeat (faster climbing or startled), a shadow on the painting, banking and turning round. One smaller trio makes a single visit over the blossom at the opening (two loops, then away until you come back up) and ride the route's pen across the Pacific (`.swallows` is now only the anchor). Pointer pushes them aside; a click startles them. `?birds=.4,.3` pins them for screenshots.
+- **The start:** browsers only play sound after a click, tap or key (a scroll doesn't count), so when sound is blocked the page holds at the opening with Enter until that first click (`sound.js`, `html.gated`). A scroll attempt nudges Enter.
+- **Swallows:** `media/swallows.webp`, white birds with their own transparency, made from `swallows.mp4` (no blend mode or filter, so no box on phones and no flicker while scrolling).
+- **Autoscroll** follows the browser's own small scroll corrections and eases its speed, instead of fighting them.
+- Photos from Connor's laptop (exported without location data): RYLA camp 2023, the lab coat on the production floor, Delhi, friends in Vietnam and Oakland, Frontier Tower.

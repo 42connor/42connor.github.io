@@ -1,0 +1,85 @@
+/* ---------- Stickers: Connor cut out of his photos, slapped on the painting ----------
+   .stk is the placement box (says.js still moves and fades the .ra-ph ones in #hello);
+   its picture carries the tilt, the slap and the peel, so the two never fight over transform. */
+.stk { position: relative; z-index: 2; overflow: visible; background: none; box-shadow: none; border-radius: 0; pointer-events: none; }
+.stk picture {
+  display: block; pointer-events: auto;
+  rotate: var(--tilt, 0deg);
+  transform-origin: 30% 85%;
+  transition: transform .5s cubic-bezier(.2, .9, .3, 1.2), rotate .5s cubic-bezier(.2, .9, .3, 1.2);
+}
+.stk img {
+  display: block; width: 100%; height: auto;
+  /* vinyl lying on the canvas: a tight contact edge and a soft fall-off */
+  filter: drop-shadow(0 1px .6px rgba(10, 14, 18, .34)) drop-shadow(0 5px 7px rgba(10, 14, 18, .24)) drop-shadow(0 16px 22px rgba(10, 14, 18, .14));
+  transition: filter .5s ease;
+  -webkit-user-drag: none; user-select: none;
+}
+
+/* the slap: dropped from above the page, a little too big, then pressed flat */
+.js .stk picture { opacity: 0; }
+.js .stk.is-on picture { opacity: 1; animation: stk-slap .52s cubic-bezier(.3, 1.35, .5, 1) both; animation-delay: var(--delay, 0s); }
+.js .stk.is-on img { animation: stk-press .52s ease-out both; animation-delay: var(--delay, 0s); }
+@keyframes stk-slap {
+  0%   { opacity: 0; scale: 1.42; translate: 0 -26px; rotate: calc(var(--tilt, 0deg) + 9deg); }
+  45%  { opacity: 1; }
+  62%  { scale: .965; translate: 0 2px; rotate: calc(var(--tilt, 0deg) - 1.5deg); }
+  100% { opacity: 1; scale: 1; translate: 0 0; rotate: var(--tilt, 0deg); }
+}
+@keyframes stk-press {
+  0%   { filter: drop-shadow(0 10px 6px rgba(10, 14, 18, .16)) drop-shadow(0 34px 34px rgba(10, 14, 18, .22)) drop-shadow(0 60px 50px rgba(10, 14, 18, .1)); }
+  62%  { filter: drop-shadow(0 .5px .4px rgba(10, 14, 18, .4)) drop-shadow(0 3px 5px rgba(10, 14, 18, .26)) drop-shadow(0 10px 16px rgba(10, 14, 18, .12)); }
+  100% { filter: drop-shadow(0 1px .6px rgba(10, 14, 18, .34)) drop-shadow(0 5px 7px rgba(10, 14, 18, .24)) drop-shadow(0 16px 22px rgba(10, 14, 18, .14)); }
+}
+
+/* the peel: one corner lifts off the paint, the shadow opens up under it */
+@media (hover: hover) and (pointer: fine) {
+  .stk picture:hover {
+    rotate: calc(var(--tilt, 0deg) * .55);
+    transform: perspective(900px) translate3d(0, -7px, 0) rotateX(9deg) rotateY(-12deg) scale(1.035);
+  }
+  .stk picture:hover img {
+    filter: drop-shadow(0 3px 2px rgba(10, 14, 18, .22)) drop-shadow(0 18px 18px rgba(10, 14, 18, .26)) drop-shadow(0 36px 40px rgba(10, 14, 18, .16));
+  }
+}
+
+/* ---------- #hello: the margin beside the writing ---------- */
+.ra-side .stk.ra-ryla { width: 64%; margin: -1vw 0 0 4%; }
+.ra-side .stk.ra-wedding { width: 42%; margin: 5.4vw 0 0 -16%; z-index: 3; }
+.ra-side .stk.ra-tuktuk { width: 62%; margin: -3.4vw 0 0 -9%; z-index: 3; }
+.ra-side .stk.ra-snorkel { width: 46%; margin: 3.2vw 0 0 58%; }
+
+/* ---------- Adelaide: stuck around the first stops ---------- */
+.stop-ph.stk { position: absolute; }
+.stop-ph.stk-medals { left: 31%; top: -11vh; width: min(17vw, 250px); --delay: .1s; }
+.stop-ph.stk-hoodie { left: 55%; top: -15vh; width: min(8.4vw, 124px); --delay: .15s; }
+.stop-ph.stop-ph-tall.stk { left: 60%; top: -19vh; width: min(13vw, 190px); --delay: .1s; }
+
+@media (max-width: 959px) {
+  .ra-side .stk.ra-ryla { width: 50%; margin: 0 4% 0 0; }
+  .ra-side .stk.ra-wedding { width: 38%; margin: 12vw 0 0 -9%; z-index: 3; }
+  .ra-side .stk.ra-tuktuk { width: 46%; margin: -4vw 0 0 -6%; }
+  .ra-side .stk.ra-snorkel { width: 40%; margin: 0 8% 0 0; }
+  .stop-ph.stk, .stop-ph.stop-ph-tall.stk { position: static; flex: none; margin: 14px 0 22px auto; }
+  .stop-ph.stk-medals { width: 46vw; margin-right: 6vw; }
+  .stop-ph.stk-hoodie { width: 22vw; margin-right: 16vw; }
+  .stop-ph.stop-ph-tall.stk { width: 34vw; margin-right: 10vw; }
+  /* tablets: the same scatter, kept to sticker size */
+  .ra-side .stk { max-width: 290px; }
+  .ra-side .stk.ra-wedding, .ra-side .stk.ra-snorkel { max-width: 230px; }
+  .stop-ph.stk-medals { max-width: 300px; }
+  .stop-ph.stk-hoodie { max-width: 140px; }
+  .stop-ph.stop-ph-tall.stk { max-width: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .stk picture, .js .stk.is-on picture, .js .stk.is-on img { opacity: 1; animation: none; }
+  .stk picture, .stk img { transition: none; }
+}
+
+/* once pressed flat, the slap lets go so the peel can move it */
+.js .stk.is-stuck picture, .js .stk.is-stuck img { animation: none; opacity: 1; }
+
+/* the birthday crown, before "I am 22." */
+.ra-side .stk.ra-bday { width: 40%; margin: 3vw -14% 0 -6%; z-index: 3; }
+@media (max-width: 959px) { .ra-side .stk.ra-bday { width: 30%; margin: 6vw -6% 0 0; } }

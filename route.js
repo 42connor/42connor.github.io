@@ -17,7 +17,7 @@ const dotsG = $('.sea-dots'), ringsG = $('.rings'), gapsG = $('.gaps'), gapAll =
 const pen = $('.pen');
 const marks = Object.fromEntries([...document.querySelectorAll('.mark')].map((m) => [m.dataset.mark, m]));
 const stops = [...document.querySelectorAll('.stop')];
-const birds = $('.swallows'), birdVid = birds.querySelector('video');
+const birds = $('.swallows');
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -89,9 +89,9 @@ function layout() {
   }
   win('.piece-hand .win');
   // Evolve: 8090
-  const ev = box($('#evolve .sec'));
+  const ev = box($('#hackathons .sec'));
   add(small ? W * 0.72 : W * 0.58, ev.cy + (small ? vh * 0.02 : 0), { ring: '8090', mark: '8090', side: small ? 'b' : 'r' });
-  ['.piece-pitch .win', '.piece-cg .win', '.piece-demo .win',
+  ['.piece-chamath .win', '.piece-pitch .win', '.piece-cg .win', '.piece-demo .win',
    '.piece-monet .win', '.win-film',
    '.pad:nth-child(3) .win', '.pad:nth-child(5) .win', '.pad:nth-child(7) .win',
    '.piece-mcp .win', '.piece-gfn .win',
@@ -170,7 +170,7 @@ function layout() {
   // gaps in the line around every label, and around the marks
   gapsG.replaceChildren();
   const PAD = 12;
-  document.querySelectorAll('.l-head, .l-line, .l-links, .sec, .pad figcaption, .stop b, .stop span, .film-play, .mark').forEach((el) => {
+  document.querySelectorAll('.l-head, .l-line, .l-links, .sec, .lead, .say p, .pad figcaption, .stop b, .stop span, .film-play, .mark').forEach((el) => {
     const t = el.classList.contains('mark') || el.classList.contains('film-play') ? { x: parseFloat(el.style.left) || box(el).x, y: parseFloat(el.style.top) || box(el).y, w: el.offsetWidth, h: el.offsetHeight } : textBox(el);
     if (!t) return;
     const r = document.createElementNS(NS, 'rect');
@@ -215,7 +215,7 @@ function paint() {
   birds.style.transform = `translate3d(${f(q.x)}px, ${f(q.y - (narrow.matches ? 46 : 70))}px, 0) rotate(${ang.toFixed(1)}deg)`;
   const k = calm ? 1 : clamp((drawn - f0) / 160) * clamp((f1 - drawn + 60) / 200);
   birds.style.opacity = k.toFixed(3);
-  if (!calm) { if (k > 0.02) { if (birdVid.paused) { birdVid.preload = 'auto'; birdVid.play().catch(() => {}); } } else if (!birdVid.paused) birdVid.pause(); }
+  birds.style.visibility = k > 0.02 ? 'visible' : 'hidden';
 }
 
 // the pen sits exactly where the scroll says, drawn at most once a frame

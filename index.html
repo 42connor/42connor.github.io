@@ -21,6 +21,8 @@
 <link rel="preload" as="image" href="ornaments/paint/van-gogh-almond-blossom.webp">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="hero.css">
+<link rel="stylesheet" href="stickers.css">
+<script type="module" src="stickers.js"></script>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -44,7 +46,7 @@
   <a class="nav-name" href="#top">Connor Hood</a>
   <nav class="nav-links" aria-label="Sections">
     <a href="#studio">Studio</a>
-    <a href="#evolve">Evolve</a>
+    <a href="#hackathons">Hackathons</a>
     <a href="#work">Work</a>
     <a href="#systems">Systems</a>
     <a href="#more">More</a>
@@ -59,7 +61,7 @@
 <div class="menu" id="menu" hidden>
   <nav aria-label="Menu">
     <a href="#studio">Studio</a>
-    <a href="#evolve">Evolve</a>
+    <a href="#hackathons">Hackathons</a>
     <a href="#work">Work</a>
     <a href="#systems">Systems</a>
     <a href="#more">More</a>
@@ -85,15 +87,15 @@
     <p class="mark" data-mark="ft"><b>Frontier Tower</b><span>2026</span></p>
     <p class="mark" data-mark="8090"><b>8090</b><span>November 2026</span></p>
   </div>
-  <div class="swallows"><video src="media/swallows.mp4" poster="media/swallows.jpg" muted loop playsinline preload="none"></video></div>
+  <div class="swallows"><img src="media/swallows.webp" width="380" height="253" alt="" decoding="async"></div>
 </div>
 
 <main>
 
-<!-- 1. Almond Blossom. A Monet Shot cursor clicks the name and zooms; the Evolve photo rises from below -->
+<!-- 1. Almond Blossom. "Hey, I am Connor": a Monet Shot cursor clicks the name and zooms; his photo rises from below -->
 <section class="open" id="top" data-paint="0" data-slow>
   <div class="stage">
-    <h1 class="name">Connor <span class="hx-target">Hood</span> <span class="role">AI systems engineer, San Francisco</span></h1>
+    <h1 class="name">Hey, I am <span class="hx-target">Connor</span> <span class="role">AI systems engineer, San Francisco</span></h1>
     <div class="hx hx-rec" aria-hidden="true">
       <svg class="hx-cursor" viewBox="0 0 28 28" width="30" height="30"><path d="M6 3.5v19.2l4.9-4.6 3.1 7.1 3.4-1.5-3.1-6.9h6.6z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
       <i class="hx-ripple"></i>
@@ -102,17 +104,50 @@
       <div class="rise">
         <div class="win win-hero">
           <picture>
-            <source type="image/webp" srcset="media/evolve-720.webp 720w, media/evolve-1200.webp 1200w, media/evolve-1920.webp 1920w" sizes="(max-width: 959px) 100vw, 62vw">
-            <img src="media/evolve-1200.jpg" width="1200" height="675" alt="Connor and his teammate holding Evolve second-place certificates with Chamath Palihapitiya, under a screen reading Second place goes to Common Ground">
+            <source type="image/webp" srcset="media/hey-720.webp 720w, media/hey-1200.webp 1200w, media/hey-1800.webp 1800w" sizes="(max-width: 959px) 100vw, 52vw">
+            <img src="media/hey-1200.jpg" width="1200" height="900" alt="Connor in a green bike helmet, smiling at the camera">
           </picture>
         </div>
       </div>
-      <figcaption class="label">
-        <p class="l-head"><b>Second place</b><span>Evolve, 8090</span><span>November 2026</span></p>
-        <p class="l-line">Common Ground: a software factory for venture portfolios.</p>
-        <p class="l-links"><a href="https://common-ground-theta.vercel.app/">Site</a><a href="https://github.com/SocialAcolyte/8090-project-Anushka-Connor">GitHub</a></p>
-      </figcaption>
     </figure>
+  </div>
+</section>
+
+<!-- 1a. Almond Blossom. In his own words, read along: one piece of writing that lights up word by word as you scroll -->
+<section class="says ra" id="hello" data-paint="0" aria-label="About Connor">
+  <div class="ra-stage">
+    <div class="say ra-text">
+      <div class="ra-row">
+        <p class="ra-p"><span class="ln">I am 22.</span> <span class="ln">As you can probably tell, I like coding.</span> <span class="ln">I like working on things that matter.</span> <span class="ln bridge">Sometimes those find me in unexpected places.</span></p>
+        <div class="ra-side">
+          <div class="ra-ph ra-bday stk" style="--tilt:7deg"><picture><source type="image/avif" srcset="media/stickers/kid-birthday-480.avif 480w, media/stickers/kid-birthday-900.avif 900w" sizes="(max-width: 959px) 30vw, 10vw"><img src="media/stickers/kid-birthday-480.png" width="711" height="900" loading="lazy" alt="Connor as a little kid in a paper birthday crown, grinning"></picture></div>
+          <div class="ra-ph ra-ryla stk" style="--tilt:-6deg"><picture><source type="image/avif" srcset="media/stickers/ryla-480.avif 480w, media/stickers/ryla-900.avif 900w" sizes="(max-width: 959px) 46vw, 15vw"><img src="media/stickers/ryla-480.png" width="702" height="848" loading="lazy" alt="Connor grinning, chalk on his hands, at a youth leadership camp in the Adelaide Hills"></picture></div>
+        </div>
+      </div>
+      <div class="ra-row">
+        <p class="ra-p"><span class="ln">While in India for a wedding, I managed to get my teeth into the <a href="https://www.ffe.org/">Foundation for Excellence</a> <span class="aside">(a charity that helps kids in India get into college!)</span></span> <span class="ln bridge">I go looking for moments like that.</span></p>
+        <div class="ra-side">
+          <div class="win ra-ph ra-ffe"><picture><source type="image/webp" srcset="media/ffe-720.webp 720w, media/ffe-1200.webp 1200w" sizes="(max-width: 959px) 56vw, 19vw"><img src="media/ffe-1200.jpg" width="1200" height="900" loading="lazy" alt="Connor pointing up at the Foundation for Excellence India Trust sign"></picture></div>
+          <div class="ra-ph ra-wedding stk" style="--tilt:8deg"><picture><source type="image/avif" srcset="media/stickers/wedding-480.avif 480w, media/stickers/wedding-900.avif 900w" sizes="(max-width: 959px) 34vw, 12vw"><img src="media/stickers/wedding-480.png" width="839" height="900" loading="lazy" alt="Connor at the wedding in India, hands together"></picture></div>
+          <div class="ra-ph ra-tuktuk stk" style="--tilt:-5deg"><picture><source type="image/avif" srcset="media/stickers/tuktuk-480.avif 480w, media/stickers/tuktuk-900.avif 900w" sizes="(max-width: 959px) 44vw, 16vw"><img src="media/stickers/tuktuk-480.png" width="900" height="658" loading="lazy" alt="Connor in a tuk-tuk in Delhi"></picture></div>
+        </div>
+      </div>
+      <div class="ra-row">
+        <p class="ra-p"><span class="ln">I am trying every day to be an <em>out&#8209;of&#8209;the&#8209;box</em> thinker.</span> <span class="ln bridge">It is a lot more fun with other people.</span></p>
+        <div class="ra-side">
+          <div class="ra-ph ra-snorkel stk" style="--tilt:7deg"><picture><source type="image/avif" srcset="media/stickers/snorkel-480.avif 480w, media/stickers/snorkel-900.avif 900w" sizes="(max-width: 959px) 40vw, 13vw"><img src="media/stickers/snorkel-480.png" width="673" height="900" loading="lazy" alt="Connor in a wetsuit with a snorkel in his mouth, making a peace sign"></picture></div>
+        </div>
+      </div>
+      <div class="ra-row">
+        <p class="ra-p"><span class="ln">And I have managed to make friends all over the globe, getting them to join in on my shenanigans, or joining in on theirs.</span></p>
+        <div class="ra-side ra-many">
+          <div class="win ra-ph"><picture><source type="image/webp" srcset="media/vietnam-720.webp 720w, media/vietnam-1200.webp 1200w" sizes="(max-width: 959px) 28vw, 9vw"><img src="media/vietnam-1200.jpg" width="1200" height="900" loading="lazy" alt="In a basket boat in Hoi An, Vietnam, with a friend"></picture></div>
+          <div class="win ra-ph"><picture><source type="image/webp" srcset="media/oakland-720.webp 720w, media/oakland-1200.webp 1200w" sizes="(max-width: 959px) 28vw, 9vw"><img src="media/oakland-1200.jpg" width="1200" height="1600" loading="lazy" alt="Connor and friends squeezed into a selfie on a rooftop in Oakland"></picture></div>
+          <div class="win ra-ph"><picture><img src="media/kz-kitchen-720.jpg" srcset="media/kz-kitchen-720.jpg 720w, media/kz-kitchen-1200.jpg 1200w" sizes="(max-width: 959px) 40vw, 13vw" width="1200" height="900" loading="lazy" alt="A selfie with friends round a kitchen table, pizza in the middle"></picture></div>
+          <div class="win ra-ph"><picture><img src="media/hallway-720.jpg" srcset="media/hallway-720.jpg 720w, media/hallway-1200.jpg 1200w" sizes="(max-width: 959px) 40vw, 13vw" width="1200" height="900" loading="lazy" alt="A grinning selfie with three friends in a hallway mirror"></picture></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -121,13 +156,13 @@
   <h2 class="sec reveal">Adelaide</h2>
   <ol class="stops">
     <li class="stop" style="--x:4%"><i class="tick"></i><b>BlueScope Steel</b><span>2021–22</span></li>
-    <li class="stop is-award" style="--x:9%"><i class="tick"></i><b>Queen Scout Award</b><span>2022</span></li>
+    <li class="stop is-award" style="--x:9%"><i class="tick"></i><b>Queen Scout Award</b><span>2022</span><div class="stop-ph stk-medals stk" style="--tilt:-9deg"><picture><source type="image/avif" srcset="media/stickers/kid-medals-480.avif 480w, media/stickers/kid-medals-900.avif 900w" sizes="(max-width: 959px) 44vw, 18vw"><img src="media/stickers/kid-medals-480.png" width="866" height="856" loading="lazy" alt="Connor as a kid in a camo jacket, medals round his neck, holding up a CD"></picture></div></li>
     <li class="stop" style="--x:13%"><i class="tick"></i><b>Coopers Brewery</b><span>2022–24</span></li>
-    <li class="stop" style="--x:10%"><i class="tick"></i><b>Senector</b><span>2023</span></li>
+    <li class="stop" style="--x:10%"><i class="tick"></i><b>Senector</b><span>2023</span><div class="stop-ph stk-hoodie stk" style="--tilt:7deg"><picture><source type="image/avif" srcset="media/stickers/kid-hoodie-480.avif 480w, media/stickers/kid-hoodie-900.avif 900w" sizes="(max-width: 959px) 22vw, 9vw"><img src="media/stickers/kid-hoodie-480.png" width="366" height="900" loading="lazy" alt="Connor as a kid in a red hoodie, a white hat and sunglasses"></picture></div></li>
     <li class="stop is-award" style="--x:5%"><i class="tick"></i><b>Rotary Youth Leadership Award</b><span>2023</span></li>
     <li class="stop" style="--x:8%"><i class="tick"></i><b>Haigh’s Chocolates</b><span>2024</span></li>
     <li class="stop is-award" style="--x:15%"><i class="tick"></i><b>National Volunteer Week</b><span>2024</span></li>
-    <li class="stop" style="--x:19%"><i class="tick"></i><b>Thermo Fisher Scientific</b></li>
+    <li class="stop" style="--x:19%"><i class="tick"></i><b>Thermo Fisher Scientific</b><div class="stop-ph stop-ph-tall stk" style="--tilt:-7deg"><picture><source type="image/avif" srcset="media/stickers/labcoat-480.avif 480w, media/stickers/labcoat-900.avif 900w" sizes="(max-width: 959px) 34vw, 14vw"><img src="media/stickers/labcoat-480.png" width="599" height="900" loading="lazy" alt="Connor in a lab coat and hairnet, thumbs up, on the production floor"></picture></div></li>
     <li class="stop is-award" style="--x:16%"><i class="tick"></i><b>Scouts SA Special Service Award</b><span>2025</span></li>
   </ol>
   <div class="sea" aria-hidden="true"></div>
@@ -136,6 +171,7 @@
 <!-- 2. Water Lilies. The studio -->
 <section class="part part-studio" id="studio" data-paint="1">
   <h2 class="sec reveal">Studio</h2>
+  <p class="lead"><span class="bridge">Most days, though, I am building.</span> I built motion capture rigs in Australia &amp; the US (SF) and I started collecting my own 3D data to train robots to speak sign language!</p>
   <figure class="piece piece-clips">
     <div class="clips">
       <div class="win clip reveal" style="--o:0"><video data-auto src="media/studio-rig.mp4" poster="media/studio-rig.jpg" muted loop playsinline preload="none" aria-label="The capture rig"></video></div>
@@ -156,16 +192,40 @@
       <p class="l-line">Synchronous ASL hand-motion video for training.</p>
     </figcaption>
   </figure>
+  <div class="studio-more">
+    <figure class="piece reveal">
+      <div class="win "><picture><source type="image/webp" srcset="media/studio-floor-720.webp 720w, media/studio-floor-1200.webp 1200w" sizes="(max-width: 959px) 60vw, 22vw"><img src="media/studio-floor-1200.jpg" width="1200" height="1600" loading="lazy" alt="The motion capture studio at Frontier Tower: cameras on tripods, the rig monitor, someone on the floor"></picture></div>
+      <figcaption class="label"><p class="l-head"><b>Frontier Tower</b><span>March 2026</span></p></figcaption>
+    </figure>
+  </div>
 </section>
 
-<!-- 3. The Starry Night. Evolve: the pitch, Common Ground, the demo room -->
-<section class="part part-evolve" id="evolve" data-paint="2">
-  <h2 class="sec reveal">Evolve</h2>
-  <div class="pair">
+<!-- 3. The Starry Night. Hackathons: 8090 (second place, the photo with Chamath, the pitch, Common Ground), then Impossibl -->
+<section class="part part-evolve" id="hackathons" data-paint="2">
+  <h2 class="sec reveal">Hackathons</h2>
+  <p class="lead lead-bridge">Shipping fast is the fun part.</p>
+  <p class="lead lead-big">I love demoing and competing at hackathons.</p>
+
+  <!-- 8090: second place. The mark is machined metal, lit by the painting's light (steel.js); the photos pile onto it -->
+  <div class="w-block w-8090">
+    <p class="w-mark" data-metal aria-hidden="true">2<sup>nd</sup></p>
+    <p class="lead lead-8090">Recently I competed in 8090’s hackathon <span class="aside">(we won 2nd place!)</span></p>
+    <figure class="piece piece-chamath reveal">
+    <div class="win">
+      <picture>
+        <source type="image/webp" srcset="media/evolve-720.webp 720w, media/evolve-1200.webp 1200w, media/evolve-1920.webp 1920w" sizes="(max-width: 959px) 100vw, 62vw">
+        <img src="media/evolve-1200.jpg" width="1200" height="675" loading="lazy" alt="Connor and Anushka holding Evolve second-place certificates with Chamath Palihapitiya, under a screen reading Second place goes to Common Ground">
+      </picture>
+    </div>
+    <figcaption class="label">
+      <p class="l-head"><b>Second place</b><span>Evolve, 8090</span><span>November 2026</span></p>
+      <p class="l-line">With Anushka and Chamath Palihapitiya.</p>
+    </figcaption>
+  </figure>
     <figure class="piece piece-pitch reveal">
       <div class="win">
         <picture>
-          <source type="image/webp" srcset="media/pitch-720.webp 720w, media/pitch-1200.webp 1200w, media/pitch-1790.webp 1790w" sizes="(max-width: 960px) 100vw, 54vw">
+          <source type="image/webp" srcset="media/pitch-720.webp 720w, media/pitch-1200.webp 1200w, media/pitch-1790.webp 1790w" sizes="(max-width: 959px) 80vw, 36vw">
           <img src="media/pitch-1200.jpg" width="1200" height="674" loading="lazy" alt="Connor presenting Common Ground at 8090">
         </picture>
       </div>
@@ -180,15 +240,26 @@
       </figcaption>
     </figure>
   </div>
-  <figure class="piece piece-demo reveal">
-    <div class="win clip"><video data-auto src="media/demo-room.mp4" poster="media/demo-room.jpg" muted loop playsinline preload="none" aria-label="The demo room at 8090"></video></div>
-    <figcaption class="label"><p class="l-head"><span>The demo room, 8090</span></p></figcaption>
-  </figure>
+
+  <!-- Impossibl: won. The demo, then the night with Fabio -->
+  <div class="w-block w-imp">
+    <p class="w-mark" data-metal aria-hidden="true">Won</p>
+    <figure class="piece piece-demo reveal">
+      <div class="win clip"><video data-auto src="media/demo-room.mp4" poster="media/demo-room.jpg" muted loop playsinline preload="none" aria-label="Demoing at the Impossibl hackathon"></video></div>
+      <figcaption class="label"><p class="l-head"><b>Impossibl</b><span>Hackathon</span><span>Won</span></p></figcaption>
+    </figure>
+    <figure class="piece piece-fabio reveal">
+      <div class="win"><picture><img src="media/fabio-night-720.jpg" srcset="media/fabio-night-720.jpg 720w, media/fabio-night-1200.jpg 1200w" sizes="(max-width: 959px) 56vw, 22vw" width="900" height="1200" loading="lazy" alt="A late-night selfie with Fabio and the Impossibl crowd"></picture></div>
+    </figure>
+    <p class="lead lead-fabio">I also won the Impossibl hackathon, and now Fabio is a great friend of mine.</p>
+  </div>
 </section>
 
 <!-- 4. The Great Wave. Work: Monet Shot, then StyleFeatures -->
 <section class="part part-work" id="work" data-paint="3">
   <h2 class="sec reveal">Work</h2>
+  <p class="lead lead-bridge">Outside of competitions, I make things just because.</p>
+  <p class="lead lead-art"><b>I love art.</b> I recently released 2 projects: one called StyleFeatures, and the other called Monet Shot.</p>
   <figure class="piece piece-wide piece-monet reveal">
     <div class="win win-take"><video data-auto src="media/monetshot-take.mp4" poster="media/monetshot-take.jpg" width="1600" height="900" muted loop playsinline preload="none" aria-label="A Monet Shot take: a StyleFeatures page recorded, zoomed on its clicks and framed on a painting"></video></div>
     <figcaption class="label">
@@ -221,11 +292,13 @@
     <figure class="pad reveal" data-piece="marbling" style="--x:3%;--y:132vh;--w:30%;--a:4 / 3;--d:.06"><div class="win win-live"><img src="ornaments/sf/marbling.webp" alt="" loading="lazy"></div><figcaption>Marbling<span class="live">Live</span></figcaption></figure>
     <figure class="pad reveal" data-piece="ripple-pool" style="--x:44%;--y:144vh;--w:34%;--a:6 / 5;--d:-.04"><div class="win win-live"><img src="pieces/ripple-pool/poster.webp" alt="" loading="lazy"></div><figcaption>Ripple pool<span class="live">Live</span></figcaption></figure>
   </div>
+  <p class="lead lead-open">They are both live and fully open source!</p>
 </section>
 
 <!-- 5. Poppy Field. Systems -->
 <section class="part part-systems" id="systems" data-paint="4">
   <h2 class="sec reveal">Systems</h2>
+  <p class="lead"><span class="bridge">Not everything I build is art, though.</span> I also worked in environmental reporting, based on accounting reports I do at my day job.</p>
   <div class="pair pair-sys">
     <figure class="piece piece-mcp reveal">
       <div class="win"><img src="media/rows/mcp.webp" width="960" height="720" loading="lazy" alt="An MCP server's site"></div>
@@ -271,6 +344,11 @@
         <p class="l-links"><a href="https://www.youtube.com/@spaceflight_news">YouTube</a><a href="https://www.instagram.com/spaceflight_news/">Instagram</a></p>
       </figcaption>
     </figure>
+  </div>
+  <div class="say say-end">
+    <p class="say-text">I am working on other projects as well.</p>
+    <p class="say-text say-mid">Usually I try to find high impact things that will make a big difference <span class="aside">(especially where I can rethink the arena from first principles).</span></p>
+    <p class="say-text say-last">If my career so far can be described as anything, it is someone who wants to help <span class="aside">(people, the west, humanity),</span> and wants to come up with new ways of doing things.</p>
   </div>
 </section>
 
@@ -356,7 +434,11 @@
 <script type="module" src="sound.js"></script>
 <script type="module" src="autoscroll.js"></script>
 <script type="module" src="main.js"></script>
+<script type="module" src="gild.js"></script>
+<script type="module" src="steel.js"></script>
+<script type="module" src="says.js"></script>
 <script type="module" src="hero.js"></script>
 <script type="module" src="route.js"></script>
+<script type="module" src="swallows.js"></script>
 </body>
 </html>

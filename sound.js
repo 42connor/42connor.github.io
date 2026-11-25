@@ -51,13 +51,23 @@ extra.forEach((b) => b.addEventListener('click', toggle));
    the site silently; the music then comes in on the first tap. Anyone who switched the
    music off before gets the site straight away, silent. Pages listen for 'site:start'. --- */
 const gate = document.querySelector('.gate');
+const html = document.documentElement;
 let started = false;
 function start() {
     if (started) return;
     started = true; window.siteStarted = true;
+    html.classList.remove('gated');
     dispatchEvent(new Event('site:start'));
     if (gate) { gate.classList.remove('is-on'); setTimeout(() => gate.remove(), 900); }
 }
+// Browsers only allow sound after a click, tap or key; a scroll is not one. So until that first
+// click the page holds at the opening (no scrolling past Enter), and a scroll attempt nudges Enter.
+let nudgeT = 0;
+const nudge = () => {
+    if (started || !gate) return;
+    showGate(); gate.classList.remove('is-nudge'); void gate.offsetWidth; gate.classList.add('is-nudge');
+    clearTimeout(nudgeT); nudgeT = setTimeout(() => gate.classList.remove('is-nudge'), 700);
+};
 function showGate() { if (!started && gate) gate.classList.add('is-on'); }
 const GESTURES = ['pointerdown', 'mousedown', 'touchend', 'keydown', 'click'];
 const unlisten = () => GESTURES.forEach((g) => removeEventListener(g, first, true));
@@ -68,10 +78,10 @@ const first = (e) => {
     start();
 };
 GESTURES.forEach((g) => addEventListener(g, first, true));
-const onFirstScroll = () => { if (scrollY > 40) { removeEventListener('scroll', onFirstScroll); start(); } };
-addEventListener('scroll', onFirstScroll, { passive: true });
+['wheel', 'touchmove'].forEach((e) => addEventListener(e, (ev) => { if (started) return; if (ev.cancelable) ev.preventDefault(); nudge(); }, { passive: false }));
 if (store.get() === 'off') start();
 else {
+    html.classList.add('gated'); scrollTo(0, 0);
     graph();
     ctx?.resume().catch(() => {});
     music.play().then(() => {
@@ -79,7 +89,7 @@ else {
         if (wanted) return;
         wanted = true; unlisten(); paint(); ramp(LEVEL, 0.3); start();
     }).catch(showGate);
-    setTimeout(() => { if (!started && music.paused) showGate(); }, 1200);
+    setTimeout(() => { if (!started && music.paused) showGate(); }, 700);
 }
 // the song plays once; when it ends the dock says Music again (press it to play once more)
 music.addEventListener('ended', () => { wanted = false; paint(); });

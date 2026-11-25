@@ -85,7 +85,7 @@ function opening() {
   nameEl.style.setProperty('--name-o', (1 - smooth(0.42, 0.8, e)).toFixed(3));
   nameEl.style.setProperty('--name-y', `${(-34 * e).toFixed(1)}px`);
   open.querySelector('.stage').style.setProperty('--e', e.toFixed(4));
-  heroLabel.style.setProperty('--lab-o', smooth(0.84, 1, e).toFixed(3));
+  heroLabel?.style.setProperty('--lab-o', smooth(0.84, 1, e).toFixed(3));
 }
 
 /* ---------- the lily pond: windows at different depths ---------- */
